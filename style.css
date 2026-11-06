@@ -1,0 +1,84 @@
+/* 全体の基本設定 */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", "Noto Sans Japanese", "ヒラギノ角ゴ ProN W3", Meiryo, sans-serif;
+    background-color: #f5f6fa;
+    color: #333;
+    text-align: center;
+}
+
+/* ヘッダーのデザイン */
+header {
+    background-color: #2f3640;
+    color: white;
+    padding: 15px 0;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 20px;
+    letter-spacing: 1px;
+}
+
+/* コート画像のエリア */
+.court-container {
+    width: 95%;
+    max-width: 400px;
+    margin: 0 auto 20px;
+}
+
+/* 実際の画像の設定 */
+#court-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* ボタン群のレイアウト */
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px; /* ボタン同士の隙間 */
+    margin-bottom: 30px;
+}
+
+/* 試合中の機動力を高めるタップしやすいボタンデザイン */
+.action-btn {
+    padding: 15px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+    width: 100px;
+}
+
+/* ボタンごとの色分け */
+#btn-goal { background-color: #e84118; } /* 得点：赤系 */
+#btn-save { background-color: #4cd137; } /* セーブ：緑系 */
+#btn-miss { background-color: #00a8ff; } /* ミス：青系 */
+
+/* CSV出力エリア */
+.export-area {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #dcdde1;
+}
+
+#btn-export {
+    padding: 12px 30px;
+    font-size: 16px;
+    background-color: #718093;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}

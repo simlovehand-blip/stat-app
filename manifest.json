@@ -1,0 +1,16 @@
+{
+  "short_name": "STAT入力",
+  "name": "S.T.A.T 入力用アプリ",
+  "icons": [
+    {
+      "src": "court.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": "index.html",
+  "background_color": "#2f3640",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#2f3640"
+}

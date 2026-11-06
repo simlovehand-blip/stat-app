@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>スタッツ入力アプリ</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <header>
+        <h1>S.T.A.T 入力用</h1>
+    </header>
+
+    <main>
+<div id="court-area" class="court-container">
+            <!-- src="画像ファイル名" を指定します。jpgの場合は court.jpg にしてください -->
+            <img src="court.png" id="court-img" alt="コート図">
+        </div>
+
+        <div class="controls">
+            <button id="btn-goal" class="action-btn">得点</button>
+            <button id="btn-save" class="action-btn">GKセーブ</button>
+            <button id="btn-miss" class="action-btn">枠外・ミス</button>
+        </div>
+
+        <div class="export-area">
+            <button id="btn-export">CSV出力</button>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(() => console.log('PWA準備完了（オフライン対応完了）'))
+                .catch((err) => console.log('エラー:', err));
+        }
+    </script>
+</body>
+</html>
