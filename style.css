@@ -1,84 +1,46 @@
-/* 全体の基本設定 */
 body {
-    margin: 0;
-    padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", "Noto Sans Japanese", "ヒラギノ角ゴ ProN W3", Meiryo, sans-serif;
-    background-color: #f5f6fa;
-    color: #333;
+    font-family: sans-serif;
     text-align: center;
-}
-
-/* ヘッダーのデザイン */
-header {
-    background-color: #2f3640;
-    color: white;
-    padding: 15px 0;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-header h1 {
     margin: 0;
-    font-size: 20px;
-    letter-spacing: 1px;
+    padding: 10px;
+    background: #f0f0f0;
+    user-select: none; /* テキスト選択を防ぐ */
 }
 
-/* コート画像のエリア */
-.court-container {
-    width: 95%;
-    max-width: 400px;
-    margin: 0 auto 20px;
-}
+/* 前半・後半 */
+.header { margin-bottom: 10px; }
+.phase-btn { padding: 10px 20px; font-size: 16px; margin: 0 5px; border: none; border-radius: 5px; background: #ccc; }
+.phase-btn.active { background: #4CAF50; color: white; font-weight: bold; }
 
-/* 実際の画像の設定 */
-#court-img {
-    width: 100%;
-    height: auto;
-    display: block;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
+/* テンキー */
+.number-section { background: white; padding: 10px; border-radius: 8px; margin-bottom: 10px; }
+.selected-number { font-size: 18px; font-weight: bold; margin-bottom: 5px; color: #333; }
+.numpad { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+.num-btn { width: 18%; padding: 12px 0; font-size: 18px; font-weight: bold; border: 1px solid #ddd; border-radius: 5px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); touch-action: manipulation; }
+.clear-btn { width: 38%; background: #ffcccc; color: #d00; }
 
-/* ボタン群のレイアウト */
-.controls {
-    display: flex;
-    justify-content: center;
-    gap: 15px; /* ボタン同士の隙間 */
-    margin-bottom: 30px;
-}
+/* コート */
+#court-area { position: relative; display: inline-block; margin-bottom: 10px; border: 2px solid #333; background: white; }
+#court-img { width: 100%; max-width: 400px; display: block; }
+#tap-marker { position: absolute; color: yellow; font-size: 24px; transform: translate(-50%, -50%); pointer-events: none; text-shadow: 0px 0px 4px black; }
 
-/* 試合中の機動力を高めるタップしやすいボタンデザイン */
-.action-btn {
-    padding: 15px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    color: white;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
-    width: 100px;
-}
+/* アクションボタン */
+.actions { margin-bottom: 15px; }
+.action-group { display: flex; justify-content: center; gap: 5px; margin-bottom: 5px; }
+.action-btn { flex: 1; padding: 12px 2px; font-size: 14px; font-weight: bold; border: none; border-radius: 5px; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); touch-action: manipulation; }
+.goal { background: #e74c3c; }
+.save { background: #3498db; }
+.miss { background: #95a5a6; }
+.seven { background: #f1c40f; color: #333; }
+.turnover { background: #8e44ad; }
+.steal { background: #2ecc71; }
+.penalty { background: #d35400; }
 
-/* ボタンごとの色分け */
-#btn-goal { background-color: #e84118; } /* 得点：赤系 */
-#btn-save { background-color: #4cd137; } /* セーブ：緑系 */
-#btn-miss { background-color: #00a8ff; } /* ミス：青系 */
+/* 履歴 */
+.history-section { background: white; padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: left; }
+.history-section h3 { margin: 0 0 10px 0; font-size: 16px; display: flex; justify-content: space-between; align-items: center; }
+#btn-undo { padding: 5px 10px; background: #ffeb3b; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+#history-list { margin: 0; padding-left: 20px; font-size: 14px; color: #333; line-height: 1.5; }
 
-/* CSV出力エリア */
-.export-area {
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 1px solid #dcdde1;
-}
-
-#btn-export {
-    padding: 12px 30px;
-    font-size: 16px;
-    background-color: #718093;
-    color: white;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
+/* 出力ボタン */
+#btn-export { width: 100%; padding: 15px; font-size: 18px; font-weight: bold; background: #2c3e50; color: white; border: none; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
