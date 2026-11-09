@@ -2,40 +2,60 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <!-- スマホでダブルタップ時にズームされないよう固定 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>スタッツ入力アプリ</title>
+    <title>S.T.A.T 入力用 Ver.4</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
-    <header>
-        <h1>S.T.A.T 入力用</h1>
-    </header>
+    <!-- 前半・後半切り替え -->
+    <div class="header">
+        <button id="btn-first-half" class="phase-btn active">前半</button>
+        <button id="btn-second-half" class="phase-btn">後半</button>
+    </div>
 
-    <main>
-<div id="court-area" class="court-container">
-            <!-- src="画像ファイル名" を指定します。jpgの場合は court.jpg にしてください -->
-            <img src="court.png" id="court-img" alt="コート図">
+    <!-- 背番号入力 -->
+    <div class="number-section">
+        <div class="selected-number">背番号: <span id="display-number">未選択</span></div>
+        <div class="numpad">
+            <button class="num-btn">1</button><button class="num-btn">2</button><button class="num-btn">3</button><button class="num-btn">4</button><button class="num-btn">5</button>
+            <button class="num-btn">6</button><button class="num-btn">7</button><button class="num-btn">8</button><button class="num-btn">9</button><button class="num-btn">0</button>
+            <button class="num-btn clear-btn">C (消去)</button>
         </div>
+    </div>
 
-        <div class="controls">
-            <button id="btn-goal" class="action-btn">得点</button>
-            <button id="btn-save" class="action-btn">GKセーブ</button>
-            <button id="btn-miss" class="action-btn">枠外・ミス</button>
-        </div>
+    <!-- コート図（タップ位置の★マーク追加） -->
+    <div id="court-area">
+        <img src="court.png" alt="コート" id="court-img">
+        <div id="tap-marker" style="display:none;">★</div>
+    </div>
 
-        <div class="export-area">
-            <button id="btn-export">CSV出力</button>
+    <!-- プレー記録ボタン -->
+    <div class="actions">
+        <div class="action-group">
+            <button class="action-btn goal" data-action="得点">得点</button>
+            <button class="action-btn save" data-action="GKセーブ">GKセーブ</button>
+            <button class="action-btn miss" data-action="枠外ミス">枠外/ミス</button>
+            <button class="action-btn seven" data-action="7mスロー">7mスロー</button>
         </div>
-    </main>
+        <div class="action-group">
+            <button class="action-btn turnover" data-action="ターンオーバー">ﾀｰﾝｵｰﾊﾞｰ</button>
+            <button class="action-btn steal" data-action="パスカット">ﾊﾟｽｶｯﾄ</button>
+            <button class="action-btn penalty" data-action="2分退場">2分退場</button>
+        </div>
+    </div>
+
+    <!-- 履歴と取り消し -->
+    <div class="history-section">
+        <h3>直近の記録 <button id="btn-undo">↩️ 1つ戻る</button></h3>
+        <ul id="history-list">
+            <li style="color:#999;">まだ記録がありません</li>
+        </ul>
+    </div>
+
+    <button id="btn-export">📥 S.T.A.T用 CSVデータを出力</button>
 
     <script src="app.js"></script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-                .then(() => console.log('PWA準備完了（オフライン対応完了）'))
-                .catch((err) => console.log('エラー:', err));
-        }
-    </script>
 </body>
 </html>
