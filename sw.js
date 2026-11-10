@@ -1,4 +1,4 @@
-const CACHE_NAME = 'stat-app-v6';
+const CACHE_NAME = 'stat-app-v8';
 // オフライン時に手元に残しておきたいファイルのリスト
 const ASSETS = [
   'index.html',
