@@ -1,41 +1,89 @@
-// 状態管理
 let statsData = [];
+let currentTeam = "自チーム";
 let currentPhase = "前半";
 let currentNumber = "";
 let currentX = "";
 let currentY = "";
 
-// DOM取得
+// ------------------------------------
+// タイマー管理
+// ------------------------------------
+let timerInterval = null;
+let startTime = 0;
+let elapsedTime = 0;
+let isRunning = false;
+
+const timerDisplay = document.getElementById('timer-display');
+const btnTimerStart = document.getElementById('btn-timer-start');
+const btnTimerStop = document.getElementById('btn-timer-stop');
+const btnTimerReset = document.getElementById('btn-timer-reset');
+
+function updateTimerDisplay(timeInMillis) {
+    const totalSeconds = Math.floor(timeInMillis / 1000);
+    const m = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+    const s = String(totalSeconds % 60).padStart(2, '0');
+    timerDisplay.innerText = `${m}:${s}`;
+}
+
+btnTimerStart.addEventListener('click', () => {
+    if (!isRunning) {
+        startTime = Date.now() - elapsedTime;
+        timerInterval = setInterval(() => {
+            elapsedTime = Date.now() - startTime;
+            updateTimerDisplay(elapsedTime);
+        }, 1000);
+        isRunning = true;
+    }
+});
+
+btnTimerStop.addEventListener('click', () => {
+    if (isRunning) {
+        clearInterval(timerInterval);
+        isRunning = false;
+    }
+});
+
+btnTimerReset.addEventListener('click', () => {
+    if (confirm("タイマーを00:00にリセットしますか？（後半開始時などに使用）")) {
+        clearInterval(timerInterval);
+        isRunning = false;
+        elapsedTime = 0;
+        updateTimerDisplay(0);
+    }
+});
+
+function getCurrentTimeStr() {
+    const totalSeconds = Math.floor(elapsedTime / 1000);
+    const m = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+    const s = String(totalSeconds % 60).padStart(2, '0');
+    return `${m}:${s}`;
+}
+// ------------------------------------
+
+// トグルボタン処理
+const btnTeamOwn = document.getElementById('btn-team-own');
+const btnTeamOpp = document.getElementById('btn-team-opp');
 const btnFirstHalf = document.getElementById('btn-first-half');
 const btnSecondHalf = document.getElementById('btn-second-half');
-const displayNumber = document.getElementById('display-number');
-const numBtns = document.querySelectorAll('.num-btn');
-const courtArea = document.getElementById('court-area');
-const tapMarker = document.getElementById('tap-marker');
-const actionBtns = document.querySelectorAll('.action-btn');
-const historyList = document.getElementById('history-list');
-const btnUndo = document.getElementById('btn-undo');
-const btnExport = document.getElementById('btn-export');
 
-// 1. 前半・後半切り替え
+btnTeamOwn.addEventListener('click', () => { currentTeam = "自チーム"; btnTeamOwn.classList.add('active'); btnTeamOpp.classList.remove('active'); });
+btnTeamOpp.addEventListener('click', () => { currentTeam = "相手チーム"; btnTeamOpp.classList.add('active'); btnTeamOwn.classList.remove('active'); });
 btnFirstHalf.addEventListener('click', () => { currentPhase = "前半"; btnFirstHalf.classList.add('active'); btnSecondHalf.classList.remove('active'); });
 btnSecondHalf.addEventListener('click', () => { currentPhase = "後半"; btnSecondHalf.classList.add('active'); btnFirstHalf.classList.remove('active'); });
 
-// 2. 背番号入力
-numBtns.forEach(btn => {
+// 背番号入力
+const displayNumber = document.getElementById('display-number');
+document.querySelectorAll('.num-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
         const val = e.target.innerText;
-        if (val.includes('C')) {
-            currentNumber = "";
-            displayNumber.innerText = "未選択";
-        } else {
-            currentNumber += val;
-            displayNumber.innerText = currentNumber;
-        }
+        if (val.includes('C')) { currentNumber = ""; displayNumber.innerText = "未選択"; } 
+        else { currentNumber += val; displayNumber.innerText = currentNumber; }
     });
 });
 
-// 3. コートタップ (座標取得と★マーク表示)
+// コートタップ
+const courtArea = document.getElementById('court-area');
+const tapMarker = document.getElementById('tap-marker');
 courtArea.addEventListener('click', (e) => {
     const rect = courtArea.getBoundingClientRect();
     currentX = Math.round(e.clientX - rect.left);
@@ -45,88 +93,57 @@ courtArea.addEventListener('click', (e) => {
     tapMarker.style.top = currentY + "px";
 });
 
-// 4. アクション記録 (ポップアップなしでスピーディーに)
-actionBtns.forEach(btn => {
+// アクション記録
+const historyList = document.getElementById('history-list');
+document.querySelectorAll('.action-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
         const actionName = e.target.getAttribute('data-action');
+        if (currentNumber === "") { alert("先に背番号を入力してください！"); return; }
         
-        // 背番号だけは必須チェック
-        if (currentNumber === "") {
-            alert("先に背番号を入力してください！");
-            return;
-        }
-
-        const now = new Date();
-        const timeStr = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
+        // ★現在時刻ではなく、タイマーの経過時間を取得する
+        const timeStr = getCurrentTimeStr();
         
-        // データを配列に追加
         statsData.push({
-            phase: currentPhase,
-            time: timeStr,
-            number: currentNumber,
-            action: actionName,
-            x: currentX,
-            y: currentY
+            team: currentTeam, phase: currentPhase, time: timeStr,
+            number: currentNumber, action: actionName, x: currentX, y: currentY
         });
 
-        // 次のプレーのために背番号と座標をリセット
-        currentNumber = "";
-        displayNumber.innerText = "未選択";
-        currentX = "";
-        currentY = "";
-        tapMarker.style.display = "none";
-
-        // 履歴を更新
+        currentNumber = ""; displayNumber.innerText = "未選択";
+        currentX = ""; currentY = ""; tapMarker.style.display = "none";
         updateHistory();
     });
 });
 
-// 5. 履歴表示と取り消し(Undo)
+// 履歴更新とUndo
 function updateHistory() {
     historyList.innerHTML = "";
-    if (statsData.length === 0) {
-        historyList.innerHTML = '<li style="color:#999;">まだ記録がありません</li>';
-        return;
-    }
-    // 直近3件を新しい順に表示
+    if (statsData.length === 0) { historyList.innerHTML = '<li style="color:#999;">まだ記録がありません</li>'; return; }
     const recent = statsData.slice(-3).reverse();
     recent.forEach(stat => {
         const li = document.createElement('li');
-        const posText = stat.x !== "" ? `(座標あり)` : `(位置なし)`;
-        li.innerText = `[${stat.phase}] #${stat.number} ${stat.action} ${posText}`;
+        li.innerText = `[${stat.time}] ${stat.team} #${stat.number} ${stat.action}`;
         historyList.appendChild(li);
     });
 }
-
-btnUndo.addEventListener('click', () => {
-    if (statsData.length === 0) return;
-    statsData.pop(); // 最新の1件を削除
-    updateHistory();
+document.getElementById('btn-undo').addEventListener('click', () => {
+    if (statsData.length > 0) { statsData.pop(); updateHistory(); }
 });
 
-// 6. 6列のCSVとして出力
-btnExport.addEventListener('click', () => {
-    if (statsData.length === 0) {
-        alert('出力するデータがありません。');
-        return;
-    }
+// CSV出力
+document.getElementById('btn-export').addEventListener('click', () => {
+    if (statsData.length === 0) { alert('出力するデータがありません。'); return; }
     
-    // ヘッダーに前後半と背番号を追加
-    let csvContent = "前後半,時間,背番号,プレー内容,X座標,Y座標\n";
-    
+    let csvContent = "チーム,前後半,時間,背番号,プレー内容,X座標,Y座標\n";
     statsData.forEach(row => {
-        csvContent += `${row.phase},${row.time},${row.number},${row.action},${row.x},${row.y}\n`;
+        csvContent += `${row.team},${row.phase},${row.time},${row.number},${row.action},${row.x},${row.y}\n`;
     });
 
     const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
     const blob = new Blob([bom, csvContent], { type: 'text/csv' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `handball_stats_${currentPhase}.csv`;
+    link.download = `handball_stats_official.csv`;
     link.click();
 });
 
-// PWA登録
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
-}
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
