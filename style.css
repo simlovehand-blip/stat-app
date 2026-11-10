@@ -1,16 +1,20 @@
-body {
-    font-family: sans-serif;
-    text-align: center;
-    margin: 0;
-    padding: 10px;
-    background: #f0f0f0;
-    user-select: none; /* テキスト選択を防ぐ */
-}
+body { font-family: sans-serif; text-align: center; margin: 0; padding: 10px; background: #f0f0f0; user-select: none; }
 
-/* 前半・後半 */
-.header { margin-bottom: 10px; }
-.phase-btn { padding: 10px 20px; font-size: 16px; margin: 0 5px; border: none; border-radius: 5px; background: #ccc; }
-.phase-btn.active { background: #4CAF50; color: white; font-weight: bold; }
+/* タイマー機能 */
+.timer-section { background: #2c3e50; color: white; padding: 10px; border-radius: 8px; margin-bottom: 10px; }
+#timer-display { font-size: 32px; font-weight: bold; font-family: monospace; letter-spacing: 2px; margin-bottom: 5px; }
+.timer-controls { display: flex; justify-content: center; gap: 10px; }
+.timer-btn { padding: 8px 15px; font-size: 14px; font-weight: bold; border: none; border-radius: 5px; color: white; touch-action: manipulation; }
+.timer-btn.start { background: #27ae60; }
+.timer-btn.stop { background: #e74c3c; }
+.timer-btn.reset { background: #7f8c8d; }
+
+/* トグルボタン（チーム・前後半） */
+.header { display: flex; justify-content: space-between; margin-bottom: 10px; gap: 10px; }
+.toggle-group { display: flex; flex: 1; background: #ccc; border-radius: 6px; overflow: hidden; }
+.toggle-btn { flex: 1; padding: 10px 0; font-size: 14px; border: none; background: #ccc; color: #555; font-weight: bold; }
+.team-btn.active { background: #34495e; color: white; }
+.phase-btn.active { background: #4CAF50; color: white; }
 
 /* テンキー */
 .number-section { background: white; padding: 10px; border-radius: 8px; margin-bottom: 10px; }
@@ -20,8 +24,8 @@ body {
 .clear-btn { width: 38%; background: #ffcccc; color: #d00; }
 
 /* コート */
-#court-area { position: relative; display: inline-block; margin-bottom: 10px; border: 2px solid #333; background: white; }
-#court-img { width: 100%; max-width: 400px; display: block; }
+#court-area { position: relative; display: inline-block; margin-bottom: 10px; border: 2px solid #333; background: white; width: 100%; max-width: 400px;}
+#court-img { width: 100%; display: block; }
 #tap-marker { position: absolute; color: yellow; font-size: 24px; transform: translate(-50%, -50%); pointer-events: none; text-shadow: 0px 0px 4px black; }
 
 /* アクションボタン */
@@ -34,13 +38,14 @@ body {
 .seven { background: #f1c40f; color: #333; }
 .turnover { background: #8e44ad; }
 .steal { background: #2ecc71; }
-.penalty { background: #d35400; }
+/* 罰則カラー */
+.warning { background: #f39c12; color: white; }
+.penalty { background: #d35400; color: white; }
+.disqual { background: #c0392b; color: white; }
 
-/* 履歴 */
+/* 履歴と出力ボタン */
 .history-section { background: white; padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: left; }
 .history-section h3 { margin: 0 0 10px 0; font-size: 16px; display: flex; justify-content: space-between; align-items: center; }
 #btn-undo { padding: 5px 10px; background: #ffeb3b; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
 #history-list { margin: 0; padding-left: 20px; font-size: 14px; color: #333; line-height: 1.5; }
-
-/* 出力ボタン */
 #btn-export { width: 100%; padding: 15px; font-size: 18px; font-weight: bold; background: #2c3e50; color: white; border: none; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
