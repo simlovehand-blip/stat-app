@@ -2,17 +2,33 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <!-- スマホでダブルタップ時にズームされないよう固定 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>S.T.A.T 入力用 Ver.4</title>
-    <link rel="stylesheet" href="style.css?v=4">
+    <title>S.T.A.T 入力用 Ver.6</title>
+    <!-- キャッシュバスティング用に?v=6を付与 -->
+    <link rel="stylesheet" href="style.css?v=6">
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
-    <!-- 前半・後半切り替え -->
+    <!-- 試合タイマー -->
+    <div class="timer-section">
+        <div id="timer-display">00:00</div>
+        <div class="timer-controls">
+            <button id="btn-timer-start" class="timer-btn start">▶ スタート</button>
+            <button id="btn-timer-stop" class="timer-btn stop">⏸ 停止</button>
+            <button id="btn-timer-reset" class="timer-btn reset">リセット</button>
+        </div>
+    </div>
+
+    <!-- チーム & 前後半 切り替え -->
     <div class="header">
-        <button id="btn-first-half" class="phase-btn active">前半</button>
-        <button id="btn-second-half" class="phase-btn">後半</button>
+        <div class="toggle-group">
+            <button id="btn-team-own" class="toggle-btn team-btn active">自チーム</button>
+            <button id="btn-team-opp" class="toggle-btn team-btn">相手チーム</button>
+        </div>
+        <div class="toggle-group">
+            <button id="btn-first-half" class="toggle-btn phase-btn active">前半</button>
+            <button id="btn-second-half" class="toggle-btn phase-btn">後半</button>
+        </div>
     </div>
 
     <!-- 背番号入力 -->
@@ -25,7 +41,7 @@
         </div>
     </div>
 
-    <!-- コート図（タップ位置の★マーク追加） -->
+    <!-- コート図 -->
     <div id="court-area">
         <img src="court.png" alt="コート" id="court-img">
         <div id="tap-marker" style="display:none;">★</div>
@@ -42,7 +58,12 @@
         <div class="action-group">
             <button class="action-btn turnover" data-action="ターンオーバー">ﾀｰﾝｵｰﾊﾞｰ</button>
             <button class="action-btn steal" data-action="パスカット">ﾊﾟｽｶｯﾄ</button>
-            <button class="action-btn penalty" data-action="2分退場">2分退場</button>
+        </div>
+        <!-- 罰則系の独立グループ -->
+        <div class="action-group">
+            <button class="action-btn warning" data-action="警告(W)">警告(W)</button>
+            <button class="action-btn penalty" data-action="2分退場">2分退場(S)</button>
+            <button class="action-btn disqual" data-action="失格(D)">失格(D)</button>
         </div>
     </div>
 
@@ -54,8 +75,9 @@
         </ul>
     </div>
 
-    <button id="btn-export">📥 S.T.A.T用 CSVデータを出力</button>
+    <button id="btn-export">📥 公式記録用 CSVデータを出力</button>
 
-    <script src="app.js?v=4"></script>
+    <!-- キャッシュバスティング用に?v=6を付与 -->
+    <script src="app.js?v=6"></script>
 </body>
 </html>
