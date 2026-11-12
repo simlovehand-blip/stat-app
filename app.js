@@ -71,7 +71,7 @@ btnFirstHalf.addEventListener('click', () => { currentPhase = "前半"; btnFirst
 btnSecondHalf.addEventListener('click', () => { currentPhase = "後半"; btnSecondHalf.classList.add('active'); btnFirstHalf.classList.remove('active'); });
 
 // ------------------------------------
-// 背番号入力 & コートタップ（★レベル1：座標反転ギミック）
+// 背番号入力 & コートタップ（後半座標反転ギミック込み）
 // ------------------------------------
 const displayNumber = document.getElementById('display-number');
 document.querySelectorAll('.num-btn').forEach(btn => {
@@ -86,16 +86,13 @@ const courtArea = document.getElementById('court-area');
 const tapMarker = document.getElementById('tap-marker');
 courtArea.addEventListener('click', (e) => {
     const rect = courtArea.getBoundingClientRect();
-    // 実際に指でタップした画面上の位置
     const tapX = Math.round(e.clientX - rect.left);
     const tapY = Math.round(e.clientY - rect.top);
     
-    // アプリ上の「★」マークは、タップした場所にそのまま表示させる
     tapMarker.style.display = "block";
     tapMarker.style.left = tapX + "px";
     tapMarker.style.top = tapY + "px";
 
-    // ★Excelに送る裏側のデータだけ、後半なら180度反転させる
     if (currentPhase === "後半") {
         currentX = Math.round(rect.width - tapX);
         currentY = Math.round(rect.height - tapY);
@@ -147,12 +144,19 @@ document.getElementById('btn-cancel-shot').addEventListener('click', () => {
     pendingAction = "";
 });
 
+// ★データ保存処理（GK番号の取得と保存を追加）
 function saveData(action, shotType, course) {
     const timeStr = getCurrentTimeStr();
+    
+    // index.html に追加した入力欄から、現在出場中のGK番号を取得
+    const activeGkInput = document.getElementById('active-gk-num');
+    const activeGK = activeGkInput ? activeGkInput.value : "";
+
     statsData.push({
         team: currentTeam, phase: currentPhase, time: timeStr,
         number: currentNumber, action: action, x: currentX, y: currentY,
-        shotType: shotType, course: course
+        shotType: shotType, course: course,
+        activeGK: activeGK // ★ここで配列にGK番号を追加
     });
 
     currentNumber = ""; displayNumber.innerText = "未選択";
@@ -180,12 +184,16 @@ document.getElementById('btn-undo').addEventListener('click', () => {
     if (statsData.length > 0) { statsData.pop(); updateHistory(); }
 });
 
+// ★CSV出力処理（出力列を10列に拡張）
 document.getElementById('btn-export').addEventListener('click', () => {
     if (statsData.length === 0) { alert('出力するデータがありません。'); return; }
     
-    let csvContent = "チーム,前後半,時間,背番号,プレー内容,X座標,Y座標,シュート種類,コース\n";
+    // ヘッダーの右端に「出場中GK」を追加
+    let csvContent = "チーム,前後半,時間,背番号,プレー内容,X座標,Y座標,シュート種類,コース,出場中GK\n";
+    
+    // 各行のデータ出力の右端に activeGK を追加
     statsData.forEach(row => {
-        csvContent += `${row.team},${row.phase},${row.time},${row.number},${row.action},${row.x},${row.y},${row.shotType},${row.course}\n`;
+        csvContent += `${row.team},${row.phase},${row.time},${row.number},${row.action},${row.x},${row.y},${row.shotType},${row.course},${row.activeGK}\n`;
     });
 
     const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
