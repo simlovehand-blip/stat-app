@@ -49,3 +49,23 @@ body { font-family: sans-serif; text-align: center; margin: 0; padding: 10px; ba
 #btn-undo { padding: 5px 10px; background: #ffeb3b; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
 #history-list { margin: 0; padding-left: 20px; font-size: 14px; color: #333; line-height: 1.5; }
 #btn-export { width: 100%; padding: 15px; font-size: 18px; font-weight: bold; background: #2c3e50; color: white; border: none; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+
+/* 新規追加：アシストボタンの色 */
+.assist { background: #e67e22; }
+
+/* 新規追加：シュート詳細モーダル（ポップアップ） */
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); z-index: 1000; justify-content: center; align-items: center; }
+.modal-content { background: white; padding: 15px; border-radius: 10px; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+.modal-content h3 { margin-top: 0; margin-bottom: 15px; font-size: 18px; color: #333; }
+
+/* シュート種類選択 */
+.shot-type-group { display: flex; justify-content: space-between; margin-bottom: 15px; gap: 5px; }
+.shot-type-btn { flex: 1; padding: 10px 0; font-size: 14px; font-weight: bold; border: 1px solid #bdc3c7; background: #ecf0f1; border-radius: 5px; color: #555; touch-action: manipulation; }
+.shot-type-btn.active { background: #3498db; color: white; border-color: #2980b9; }
+
+/* 3x3 ゴール枠 (GKチャート) */
+.goal-frame { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr 1fr; gap: 4px; background: #c0392b; padding: 8px; border: 6px solid #bdc3c7; border-bottom: none; height: 200px; margin-bottom: 15px; }
+.goal-zone { background: rgba(255,255,255,0.9); display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 14px; color: #333; border: 1px dashed #95a5a6; touch-action: manipulation; cursor: pointer; }
+.goal-zone:active { background: #f1c40f; }
+
+.cancel-btn { padding: 12px; background: #7f8c8d; color: white; border: none; border-radius: 5px; font-weight: bold; width: 100%; font-size: 16px; }
