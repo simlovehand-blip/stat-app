@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>S.T.A.T 入力用 Ver.6</title>
-    <!-- キャッシュバスティング用に?v=6を付与 -->
-    <link rel="stylesheet" href="style.css?v=8">
+    <title>S.T.A.T 入力用 Ver.9</title>
+    <!-- キャッシュバスティング用に?v=9を付与 -->
+    <link rel="stylesheet" href="style.css?v=9">
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
@@ -56,6 +56,7 @@
             <button class="action-btn seven" data-action="7mスロー">7mスロー</button>
         </div>
         <div class="action-group">
+            <button class="action-btn assist" data-action="アシスト">アシスト</button>
             <button class="action-btn turnover" data-action="ターンオーバー">ﾀｰﾝｵｰﾊﾞｰ</button>
             <button class="action-btn steal" data-action="パスカット">ﾊﾟｽｶｯﾄ</button>
         </div>
@@ -77,7 +78,35 @@
 
     <button id="btn-export">📥 公式記録用 CSVデータを出力</button>
 
-    <!-- キャッシュバスティング用に?v=6を付与 -->
-    <script src="app.js?v=8"></script>
+    <!-- シュート詳細モーダル (GKチャート & シュート種類) -->
+    <div id="shot-modal" class="modal">
+        <div class="modal-content">
+            <h3 id="modal-title">シュート詳細を記録</h3>
+            
+            <div class="shot-type-group">
+                <button class="shot-type-btn active" data-type="6m">6m</button>
+                <button class="shot-type-btn" data-type="9m">9m</button>
+                <button class="shot-type-btn" data-type="サイド">サイド</button>
+                <button class="shot-type-btn" data-type="速攻">速攻</button>
+            </div>
+
+            <div class="goal-frame">
+                <div class="goal-zone" data-zone="左上">左上</div>
+                <div class="goal-zone" data-zone="中央上">中上</div>
+                <div class="goal-zone" data-zone="右上">右上</div>
+                <div class="goal-zone" data-zone="左中">左中</div>
+                <div class="goal-zone" data-zone="中央">中央</div>
+                <div class="goal-zone" data-zone="右中">右中</div>
+                <div class="goal-zone" data-zone="左下">左下</div>
+                <div class="goal-zone" data-zone="中央下">中下</div>
+                <div class="goal-zone" data-zone="右下">右下</div>
+            </div>
+            
+            <button id="btn-cancel-shot" class="cancel-btn">キャンセル</button>
+        </div>
+    </div>
+
+    <!-- キャッシュバスティング用に?v=9を付与 -->
+    <script src="app.js?v=9"></script>
 </body>
 </html>
