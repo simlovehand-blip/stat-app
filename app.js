@@ -71,7 +71,7 @@ btnFirstHalf.addEventListener('click', () => { currentPhase = "前半"; btnFirst
 btnSecondHalf.addEventListener('click', () => { currentPhase = "後半"; btnSecondHalf.classList.add('active'); btnFirstHalf.classList.remove('active'); });
 
 // ------------------------------------
-// 背番号入力 & コートタップ
+// 背番号入力 & コートタップ（★レベル1：座標反転ギミック）
 // ------------------------------------
 const displayNumber = document.getElementById('display-number');
 document.querySelectorAll('.num-btn').forEach(btn => {
@@ -86,11 +86,23 @@ const courtArea = document.getElementById('court-area');
 const tapMarker = document.getElementById('tap-marker');
 courtArea.addEventListener('click', (e) => {
     const rect = courtArea.getBoundingClientRect();
-    currentX = Math.round(e.clientX - rect.left);
-    currentY = Math.round(e.clientY - rect.top);
+    // 実際に指でタップした画面上の位置
+    const tapX = Math.round(e.clientX - rect.left);
+    const tapY = Math.round(e.clientY - rect.top);
+    
+    // アプリ上の「★」マークは、タップした場所にそのまま表示させる
     tapMarker.style.display = "block";
-    tapMarker.style.left = currentX + "px";
-    tapMarker.style.top = currentY + "px";
+    tapMarker.style.left = tapX + "px";
+    tapMarker.style.top = tapY + "px";
+
+    // ★Excelに送る裏側のデータだけ、後半なら180度反転させる
+    if (currentPhase === "後半") {
+        currentX = Math.round(rect.width - tapX);
+        currentY = Math.round(rect.height - tapY);
+    } else {
+        currentX = tapX;
+        currentY = tapY;
+    }
 });
 
 // ------------------------------------
@@ -104,20 +116,16 @@ document.querySelectorAll('.action-btn').forEach(btn => {
         const actionName = e.target.getAttribute('data-action');
         if (currentNumber === "") { alert("先に背番号を入力してください！"); return; }
         
-        // シュート系アクションの場合はモーダルを開く
         if (actionName === "得点" || actionName === "GKセーブ" || actionName === "枠外ミス") {
             pendingAction = actionName;
             modalTitle.innerText = `[${actionName}] の詳細を記録`;
             shotModal.style.display = "flex";
-        } 
-        // それ以外（アシスト、退場など）は即座に記録
-        else {
+        } else {
             saveData(actionName, "", "");
         }
     });
 });
 
-// シュート種類（6m, 9m等）の選択
 document.querySelectorAll('.shot-type-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
         document.querySelectorAll('.shot-type-btn').forEach(b => b.classList.remove('active'));
@@ -126,7 +134,6 @@ document.querySelectorAll('.shot-type-btn').forEach(btn => {
     });
 });
 
-// ゴール枠（コース）がタップされたら記録確定
 document.querySelectorAll('.goal-zone').forEach(zone => {
     zone.addEventListener('click', (e) => {
         const course = e.target.getAttribute('data-zone');
@@ -135,13 +142,11 @@ document.querySelectorAll('.goal-zone').forEach(zone => {
     });
 });
 
-// モーダルのキャンセル
 document.getElementById('btn-cancel-shot').addEventListener('click', () => {
     shotModal.style.display = "none";
     pendingAction = "";
 });
 
-// データ保存処理
 function saveData(action, shotType, course) {
     const timeStr = getCurrentTimeStr();
     statsData.push({
@@ -178,7 +183,6 @@ document.getElementById('btn-undo').addEventListener('click', () => {
 document.getElementById('btn-export').addEventListener('click', () => {
     if (statsData.length === 0) { alert('出力するデータがありません。'); return; }
     
-    // ★ 右端に「シュート種類」と「コース」の列を追加
     let csvContent = "チーム,前後半,時間,背番号,プレー内容,X座標,Y座標,シュート種類,コース\n";
     statsData.forEach(row => {
         csvContent += `${row.team},${row.phase},${row.time},${row.number},${row.action},${row.x},${row.y},${row.shotType},${row.course}\n`;
