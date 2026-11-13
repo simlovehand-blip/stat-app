@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>S.T.A.T 入力用 Ver.9</title>
+    <!-- ↓ PDF化用ライブラリ（完璧な位置です！） -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <!-- キャッシュバスティング用に?v=9を付与 -->
     <link rel="stylesheet" href="style.css?v=11">
     <link rel="manifest" href="manifest.json">
 </head>
@@ -30,6 +30,11 @@
             <button id="btn-first-half" class="toggle-btn phase-btn active">前半</button>
             <button id="btn-second-half" class="toggle-btn phase-btn">後半</button>
         </div>
+    </div>
+
+    <!-- ★修正：現在のGK設定（はみ出していたものを正しい位置に移動しました） -->
+    <div style="text-align: center; margin: 10px 0; font-weight: bold; background: #ecf0f1; padding: 10px; border-radius: 5px;">
+        出場中の自チームGK: <input type="tel" id="active-gk-num" placeholder="番号" style="width: 60px; text-align: center; font-size: 18px; padding: 5px;">
     </div>
 
     <!-- 背番号入力 -->
@@ -71,13 +76,77 @@
 
     <!-- 履歴と取り消し -->
     <div class="history-section">
-        <h3>直近の記録 <button id="btn-undo">↩️ 1つ戻る</button></h3>
+        <h3 style="margin-top:0;">直近の記録 <button id="btn-undo">↩️ 1つ戻る</button></h3>
         <ul id="history-list">
             <li style="color:#999;">まだ記録がありません</li>
         </ul>
     </div>
 
-    <button id="btn-export">📥 公式記録用 CSVデータを出力</button>
+    <!-- 既存のCSVボタン -->
+    <button id="btn-export" style="margin-bottom: 10px;">📥 公式記録用 CSVデータを出力</button>
+
+    <!-- ★★★ ここからが今回追加したPDF関連のコードです ★★★ -->
+    <button id="btn-preview-pdf" class="action-btn" style="background-color: #8e44ad; color: white; width: 100%; margin-top: 10px;">📄 ランニングスコアをPDF出力</button>
+    <div style="height: 50px;"></div> <!-- 一番下の余白 -->
+
+    <!-- PDF化されるモーダル（普段は非表示） -->
+    <div id="pdf-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; overflow-y:auto; padding:10px; box-sizing:border-box;">
+        
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px; position:sticky; top:0; z-index:10000;">
+            <button id="btn-close-pdf" style="padding:10px 20px; font-size:16px; border-radius:5px; border:none; background:#ecf0f1;">戻る</button>
+            <button id="btn-download-pdf" style="padding:10px 20px; font-size:16px; border-radius:5px; border:none; background:#2980b9; color:white; font-weight:bold;">↓ PDFを保存・共有</button>
+        </div>
+
+        <div style="overflow-x: auto; background: #525659; padding: 10px; border-radius: 5px;">
+            <!-- このA4サイズの白い領域がそのままPDFになります -->
+            <div id="score-sheet-container" style="width: 210mm; min-height: 297mm; background: white; padding: 15mm; box-sizing: border-box; font-family: sans-serif; font-size: 14px; margin: 0 auto; color: black;">
+                <h2 style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 5px;">公式ランニングスコア</h2>
+                <div style="display: flex; justify-content: space-between;">
+                    <!-- 左半分：前半 -->
+                    <div style="width: 48%;">
+                        <h3 style="text-align: center; margin: 5px 0;">【 前 半 】</h3>
+                        <table style="width: 100%; border-collapse: collapse; text-align: center;" border="1" bordercolor="#333">
+                            <thead style="background: #f0f0f0;">
+                                <tr>
+                                    <th colspan="3" style="padding: 5px;">自チーム</th>
+                                    <th rowspan="2" style="width: 50px;">時間</th>
+                                    <th colspan="3" style="padding: 5px;">相手チーム</th>
+                                </tr>
+                                <tr>
+                                    <th style="width:15%;">番</th><th style="width:15%;">結</th><th style="width:20%;">点</th>
+                                    <th style="width:20%;">点</th><th style="width:15%;">結</th><th style="width:15%;">番</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-first-half">
+                                <!-- JSで自動挿入されます -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- 右半分：後半 -->
+                    <div style="width: 48%;">
+                        <h3 style="text-align: center; margin: 5px 0;">【 後 半 】</h3>
+                        <table style="width: 100%; border-collapse: collapse; text-align: center;" border="1" bordercolor="#333">
+                            <thead style="background: #f0f0f0;">
+                                <tr>
+                                    <th colspan="3" style="padding: 5px;">自チーム</th>
+                                    <th rowspan="2" style="width: 50px;">時間</th>
+                                    <th colspan="3" style="padding: 5px;">相手チーム</th>
+                                </tr>
+                                <tr>
+                                    <th style="width:15%;">番</th><th style="width:15%;">結</th><th style="width:20%;">点</th>
+                                    <th style="width:20%;">点</th><th style="width:15%;">結</th><th style="width:15%;">番</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-second-half">
+                                <!-- JSで自動挿入されます -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ★★★ 追加ここまで ★★★ -->
 
     <!-- シュート詳細モーダル (GKチャート & シュート種類) -->
     <div id="shot-modal" class="modal">
@@ -111,16 +180,3 @@
     <script src="app.js?v=11"></script>
 </body>
 </html>
-
-<!-- チーム & 前後半 切り替え -->
-    <div class="header">
-        (中略...既存のボタンコード)
-    </div>
-
-    <!-- ★新規追加：現在のGK設定 -->
-    <div style="text-align: center; margin: 10px 0; font-weight: bold; background: #ecf0f1; padding: 10px; border-radius: 5px;">
-        出場中の自チームGK: <input type="tel" id="active-gk-num" placeholder="番号" style="width: 60px; text-align: center; font-size: 18px; padding: 5px;">
-    </div>
-
-    <!-- 背番号入力 -->
-    <div class="number-section">
