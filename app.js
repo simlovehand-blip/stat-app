@@ -109,6 +109,9 @@ const shotModal = document.getElementById('shot-modal');
 const modalTitle = document.getElementById('modal-title');
 
 document.querySelectorAll('.action-btn').forEach(btn => {
+    // PDFプレビューボタンは除外する
+    if(btn.id === 'btn-preview-pdf') return;
+
     btn.addEventListener('click', (e) => {
         const actionName = e.target.getAttribute('data-action');
         if (currentNumber === "") { alert("先に背番号を入力してください！"); return; }
@@ -144,11 +147,10 @@ document.getElementById('btn-cancel-shot').addEventListener('click', () => {
     pendingAction = "";
 });
 
-// ★データ保存処理（GK番号の取得と保存を追加）
+// ★データ保存処理
 function saveData(action, shotType, course) {
     const timeStr = getCurrentTimeStr();
     
-    // index.html に追加した入力欄から、現在出場中のGK番号を取得
     const activeGkInput = document.getElementById('active-gk-num');
     const activeGK = activeGkInput ? activeGkInput.value : "";
 
@@ -156,7 +158,7 @@ function saveData(action, shotType, course) {
         team: currentTeam, phase: currentPhase, time: timeStr,
         number: currentNumber, action: action, x: currentX, y: currentY,
         shotType: shotType, course: course,
-        activeGK: activeGK // ★ここで配列にGK番号を追加
+        activeGK: activeGK 
     });
 
     currentNumber = ""; displayNumber.innerText = "未選択";
@@ -184,14 +186,11 @@ document.getElementById('btn-undo').addEventListener('click', () => {
     if (statsData.length > 0) { statsData.pop(); updateHistory(); }
 });
 
-// ★CSV出力処理（出力列を10列に拡張）
 document.getElementById('btn-export').addEventListener('click', () => {
     if (statsData.length === 0) { alert('出力するデータがありません。'); return; }
     
-    // ヘッダーの右端に「出場中GK」を追加
     let csvContent = "チーム,前後半,時間,背番号,プレー内容,X座標,Y座標,シュート種類,コース,出場中GK\n";
     
-    // 各行のデータ出力の右端に activeGK を追加
     statsData.forEach(row => {
         csvContent += `${row.team},${row.phase},${row.time},${row.number},${row.action},${row.x},${row.y},${row.shotType},${row.course},${row.activeGK}\n`;
     });
@@ -204,4 +203,111 @@ document.getElementById('btn-export').addEventListener('click', () => {
     link.click();
 });
 
+// ==========================================
+// ランニングスコアの自動生成 ＆ PDF出力機能
+// ==========================================
+const pdfModal = document.getElementById('pdf-modal');
+const btnPreviewPdf = document.getElementById('btn-preview-pdf');
+const btnClosePdf = document.getElementById('btn-close-pdf');
+const btnDownloadPdf = document.getElementById('btn-download-pdf');
+
+// プレビューボタンを押した時の処理
+btnPreviewPdf.addEventListener('click', () => {
+    generateScoreSheet(); // 表を組み立てる
+    pdfModal.style.display = 'block'; // 画面を表示
+});
+
+// 戻るボタン
+btnClosePdf.addEventListener('click', () => {
+    pdfModal.style.display = 'none';
+});
+
+// VBAのロジックをJSで再現し、表に流し込む関数
+function generateScoreSheet() {
+    const tbody1 = document.getElementById('tbody-first-half');
+    const tbody2 = document.getElementById('tbody-second-half');
+    tbody1.innerHTML = '';
+    tbody2.innerHTML = '';
+
+    let scoreA = 0; // 自チーム得点
+    let scoreB = 0; // 相手チーム得点
+
+    statsData.forEach(row => {
+        let resultStr = "";
+        let isRecordable = false;
+
+        // 得点・退場などの判定
+        if (row.action === "得点" || row.action === "7mスロー") {
+            if (row.team === "自チーム") scoreA++;
+            if (row.team === "相手チーム") scoreB++;
+            resultStr = "";
+            isRecordable = true;
+        } else if (row.action === "警告(W)") {
+            resultStr = "W"; isRecordable = true;
+        } else if (row.action === "2分退場") {
+            resultStr = "S"; isRecordable = true;
+        } else if (row.action === "失格(D)") {
+            resultStr = "D"; isRecordable = true;
+        }
+
+        // 表の行（<tr>）を作成
+        if (isRecordable) {
+            const tr = document.createElement('tr');
+            
+            if (row.team === "自チーム") {
+                tr.innerHTML = `
+                    <td style="padding:4px;">${row.number}</td>
+                    <td style="padding:4px;">${resultStr}</td>
+                    <td style="padding:4px; font-weight:bold; font-size:16px;">${resultStr === "" ? scoreA : ""}</td>
+                    <td style="padding:4px; font-weight:bold;">${row.time}</td>
+                    <td style="padding:4px;"></td><td style="padding:4px;"></td><td style="padding:4px;"></td>
+                `;
+            } else {
+                tr.innerHTML = `
+                    <td style="padding:4px;"></td><td style="padding:4px;"></td><td style="padding:4px;"></td>
+                    <td style="padding:4px; font-weight:bold;">${row.time}</td>
+                    <td style="padding:4px; font-weight:bold; font-size:16px;">${resultStr === "" ? scoreB : ""}</td>
+                    <td style="padding:4px;">${resultStr}</td>
+                    <td style="padding:4px;">${row.number}</td>
+                `;
+            }
+
+            // 前半か後半かで入れる場所を分ける
+            if (row.phase === "前半") {
+                tbody1.appendChild(tr);
+            } else {
+                tbody2.appendChild(tr);
+            }
+        }
+    });
+}
+
+// PDFダウンロード処理
+btnDownloadPdf.addEventListener('click', () => {
+    // PDF化中はボタンを「処理中...」にして連打を防止
+    btnDownloadPdf.innerText = "作成中...";
+    btnDownloadPdf.disabled = true;
+
+    const element = document.getElementById('score-sheet-container');
+    const now = new Date();
+    const fileName = `公式記録_${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}.pdf`;
+
+    const opt = {
+        margin:       0,
+        filename:     fileName,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 }, // 画質を良くする
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save().then(() => {
+        // ダウンロードが終わったらボタンを元に戻す
+        btnDownloadPdf.innerText = "↓ PDFを保存・共有";
+        btnDownloadPdf.disabled = false;
+    });
+});
+
+// ------------------------------------
+// ServiceWorker登録
+// ------------------------------------
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
