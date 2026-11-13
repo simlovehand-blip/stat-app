@@ -9,9 +9,9 @@ let currentY = "";
 let pendingAction = "";
 let currentShotType = "6m";
 
-// ------------------------------------
+// ==========================================
 // タイマー管理
-// ------------------------------------
+// ==========================================
 let timerInterval = null;
 let startTime = 0;
 let elapsedTime = 0;
@@ -57,9 +57,9 @@ function getCurrentTimeStr() {
     return `${m}:${s}`;
 }
 
-// ------------------------------------
-// トグルボタン処理
-// ------------------------------------
+// ==========================================
+// トグルボタン処理 (チーム & 前後半)
+// ==========================================
 const btnTeamOwn = document.getElementById('btn-team-own');
 const btnTeamOpp = document.getElementById('btn-team-opp');
 const btnFirstHalf = document.getElementById('btn-first-half');
@@ -70,9 +70,9 @@ btnTeamOpp.addEventListener('click', () => { currentTeam = "相手チーム"; bt
 btnFirstHalf.addEventListener('click', () => { currentPhase = "前半"; btnFirstHalf.classList.add('active'); btnSecondHalf.classList.remove('active'); });
 btnSecondHalf.addEventListener('click', () => { currentPhase = "後半"; btnSecondHalf.classList.add('active'); btnFirstHalf.classList.remove('active'); });
 
-// ------------------------------------
-// 背番号入力 & コートタップ（後半座標反転ギミック込み）
-// ------------------------------------
+// ==========================================
+// 背番号入力 & コートタップ
+// ==========================================
 const displayNumber = document.getElementById('display-number');
 document.querySelectorAll('.num-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -102,18 +102,19 @@ courtArea.addEventListener('click', (e) => {
     }
 });
 
-// ------------------------------------
+// ==========================================
 // アクション記録 ＆ モーダル制御
-// ------------------------------------
+// ==========================================
 const shotModal = document.getElementById('shot-modal');
 const modalTitle = document.getElementById('modal-title');
 
 document.querySelectorAll('.action-btn').forEach(btn => {
-    // PDFプレビューボタンは除外する
-    if(btn.id === 'btn-preview-pdf') return;
+    // PDF・設定・CSVボタンなどの特殊ボタンは除外
+    if(btn.id === 'btn-preview-pdf' || btn.id === 'btn-roster-settings' || btn.id === 'btn-export') return;
 
     btn.addEventListener('click', (e) => {
         const actionName = e.target.getAttribute('data-action');
+        if (!actionName) return;
         if (currentNumber === "") { alert("先に背番号を入力してください！"); return; }
         
         if (actionName === "得点" || actionName === "GKセーブ" || actionName === "枠外ミス") {
@@ -147,10 +148,9 @@ document.getElementById('btn-cancel-shot').addEventListener('click', () => {
     pendingAction = "";
 });
 
-// ★データ保存処理
+// データ保存処理
 function saveData(action, shotType, course) {
     const timeStr = getCurrentTimeStr();
-    
     const activeGkInput = document.getElementById('active-gk-num');
     const activeGK = activeGkInput ? activeGkInput.value : "";
 
@@ -166,9 +166,9 @@ function saveData(action, shotType, course) {
     updateHistory();
 }
 
-// ------------------------------------
+// ==========================================
 // 履歴更新・Undo・CSV出力
-// ------------------------------------
+// ==========================================
 const historyList = document.getElementById('history-list');
 function updateHistory() {
     historyList.innerHTML = "";
@@ -204,39 +204,81 @@ document.getElementById('btn-export').addEventListener('click', () => {
 });
 
 // ==========================================
-// ランニングスコアの自動生成 ＆ PDF出力機能
+// 名簿設定の動作処理
+// ==========================================
+const rosterModal = document.getElementById('roster-modal');
+const rosterInput = document.getElementById('roster-input');
+
+document.getElementById('btn-roster-settings').addEventListener('click', () => {
+    let saved = localStorage.getItem('statAppRoster');
+    let text = "";
+    if (saved) {
+        const parsed = JSON.parse(saved);
+        for (let num in parsed) {
+            text += `${num},${parsed[num]}\n`;
+        }
+    } else {
+        text = "1,長谷部(GK)\n2,高知 太郎\n"; // 初期の入力例
+    }
+    rosterInput.value = text;
+    rosterModal.style.display = 'flex';
+});
+
+document.getElementById('btn-close-roster').addEventListener('click', () => {
+    rosterModal.style.display = 'none';
+});
+
+document.getElementById('btn-save-roster').addEventListener('click', () => {
+    const lines = rosterInput.value.split('\n');
+    let newRoster = {};
+    
+    lines.forEach(line => {
+        const parts = line.split(',');
+        if (parts.length >= 2) {
+            const num = parts[0].trim();
+            const name = parts[1].trim();
+            if (num !== "" && name !== "") {
+                newRoster[num] = name;
+            }
+        }
+    });
+
+    localStorage.setItem('statAppRoster', JSON.stringify(newRoster));
+    alert('自チームの選手名簿を保存しました！');
+    rosterModal.style.display = 'none';
+});
+
+// ==========================================
+// ランニングスコア＆個人成績の自動生成とPDF出力
 // ==========================================
 const pdfModal = document.getElementById('pdf-modal');
 const btnPreviewPdf = document.getElementById('btn-preview-pdf');
 const btnClosePdf = document.getElementById('btn-close-pdf');
 const btnDownloadPdf = document.getElementById('btn-download-pdf');
 
-// プレビューボタンを押した時の処理
 btnPreviewPdf.addEventListener('click', () => {
-    generateScoreSheet(); // 表を組み立てる
-    pdfModal.style.display = 'block'; // 画面を表示
+    generateScoreSheet(); 
+    pdfModal.style.display = 'block'; 
 });
 
-// 戻るボタン
 btnClosePdf.addEventListener('click', () => {
     pdfModal.style.display = 'none';
 });
 
-// VBAのロジックをJSで再現し、表に流し込む関数
 function generateScoreSheet() {
+    // --- 1. ランニングスコアの生成 ---
     const tbody1 = document.getElementById('tbody-first-half');
     const tbody2 = document.getElementById('tbody-second-half');
     tbody1.innerHTML = '';
     tbody2.innerHTML = '';
 
-    let scoreA = 0; // 自チーム得点
-    let scoreB = 0; // 相手チーム得点
+    let scoreA = 0; 
+    let scoreB = 0; 
 
     statsData.forEach(row => {
         let resultStr = "";
         let isRecordable = false;
 
-        // 得点・退場などの判定
         if (row.action === "得点" || row.action === "7mスロー") {
             if (row.team === "自チーム") scoreA++;
             if (row.team === "相手チーム") scoreB++;
@@ -250,7 +292,6 @@ function generateScoreSheet() {
             resultStr = "D"; isRecordable = true;
         }
 
-        // 表の行（<tr>）を作成
         if (isRecordable) {
             const tr = document.createElement('tr');
             
@@ -272,7 +313,6 @@ function generateScoreSheet() {
                 `;
             }
 
-            // 前半か後半かで入れる場所を分ける
             if (row.phase === "前半") {
                 tbody1.appendChild(tr);
             } else {
@@ -280,11 +320,86 @@ function generateScoreSheet() {
             }
         }
     });
+
+    // --- 2. 個人スタッツ（成績）の集計と生成 ---
+    let myTeamPlayers = {};
+    const savedRoster = localStorage.getItem('statAppRoster');
+    if (savedRoster) {
+        myTeamPlayers = JSON.parse(savedRoster);
+    }
+
+    let statsOwn = {};
+    let statsOpp = {};
+
+    statsData.forEach(row => {
+        if (!row.number) return; 
+        
+        let targetStats = (row.team === "自チーム") ? statsOwn : statsOpp;
+        
+        if (!targetStats[row.number]) {
+            targetStats[row.number] = { goals: 0, w: 0, s: 0, d: 0 };
+        }
+
+        if (row.action === "得点" || row.action === "7mスロー") targetStats[row.number].goals++;
+        if (row.action === "警告(W)") targetStats[row.number].w++;
+        if (row.action === "2分退場") targetStats[row.number].s++;
+        if (row.action === "失格(D)") targetStats[row.number].d++;
+    });
+
+    function renderIndividualTable(tbodyId, statsObj, playerList = null) {
+        const tbody = document.getElementById(tbodyId);
+        tbody.innerHTML = '';
+        
+        let totalGoals = 0, totalW = 0, totalS = 0, totalD = 0;
+        
+        const sortedNumbers = Object.keys(statsObj).sort((a, b) => parseInt(a) - parseInt(b));
+        const rowCount = Math.max(16, sortedNumbers.length);
+
+        for (let i = 0; i < rowCount; i++) {
+            const tr = document.createElement('tr');
+            tr.style.backgroundColor = (i % 2 === 0) ? "#ffccff" : "#ffffff";
+
+            if (i < sortedNumbers.length) {
+                const num = sortedNumbers[i];
+                const p = statsObj[num];
+                totalGoals += p.goals;
+                totalW += p.w;
+                totalS += p.s;
+                totalD += p.d;
+
+                let playerName = (playerList && playerList[num]) ? playerList[num] : "";
+
+                tr.innerHTML = `
+                    <td style="padding:4px; font-weight:bold;">${num}</td>
+                    <td style="padding:4px; font-size:12px; text-align:left;">${playerName}</td>
+                    <td style="padding:4px;">${p.goals > 0 ? p.goals : ''}</td>
+                    <td style="padding:4px;">${p.w > 0 ? p.w : ''}</td>
+                    <td style="padding:4px;">${p.s > 0 ? p.s : ''}</td>
+                    <td style="padding:4px;">${p.d > 0 ? p.d : ''}</td>
+                `;
+            } else {
+                tr.innerHTML = `<td style="padding:4px; height:26px;"></td><td></td><td></td><td></td><td></td><td></td>`;
+            }
+            tbody.appendChild(tr);
+        }
+
+        const totalTr = document.createElement('tr');
+        totalTr.style.backgroundColor = "#ffccff";
+        totalTr.innerHTML = `
+            <td colspan="2" style="padding:4px; font-weight:bold; text-align:center;">合計</td>
+            <td style="padding:4px; font-weight:bold;">${totalGoals > 0 ? totalGoals : ''}</td>
+            <td style="padding:4px; font-weight:bold;">${totalW > 0 ? totalW : ''}</td>
+            <td style="padding:4px; font-weight:bold;">${totalS > 0 ? totalS : ''}</td>
+            <td style="padding:4px; font-weight:bold;">${totalD > 0 ? totalD : ''}</td>
+        `;
+        tbody.appendChild(totalTr);
+    }
+
+    renderIndividualTable('tbody-individual-own', statsOwn, myTeamPlayers);
+    renderIndividualTable('tbody-individual-opp', statsOpp, null);
 }
 
-// PDFダウンロード処理
 btnDownloadPdf.addEventListener('click', () => {
-    // PDF化中はボタンを「処理中...」にして連打を防止
     btnDownloadPdf.innerText = "作成中...";
     btnDownloadPdf.disabled = true;
 
@@ -296,18 +411,17 @@ btnDownloadPdf.addEventListener('click', () => {
         margin:       0,
         filename:     fileName,
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 }, // 画質を良くする
+        html2canvas:  { scale: 2 },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
     html2pdf().set(opt).from(element).save().then(() => {
-        // ダウンロードが終わったらボタンを元に戻す
         btnDownloadPdf.innerText = "↓ PDFを保存・共有";
         btnDownloadPdf.disabled = false;
     });
 });
 
-// ------------------------------------
+// ==========================================
 // ServiceWorker登録
-// ------------------------------------
+// ==========================================
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
