@@ -295,21 +295,22 @@ function generateScoreSheet() {
         if (isRecordable) {
             const tr = document.createElement('tr');
             
+            // 行の高さを削り、1ページに大量の行を収める
             if (row.team === "自チーム") {
                 tr.innerHTML = `
-                    <td style="padding:4px;">${row.number}</td>
-                    <td style="padding:4px;">${resultStr}</td>
-                    <td style="padding:4px; font-weight:bold; font-size:16px;">${resultStr === "" ? scoreA : ""}</td>
-                    <td style="padding:4px; font-weight:bold;">${row.time}</td>
-                    <td style="padding:4px;"></td><td style="padding:4px;"></td><td style="padding:4px;"></td>
+                    <td style="padding:1px 2px;">${row.number}</td>
+                    <td style="padding:1px 2px;">${resultStr}</td>
+                    <td style="padding:1px 2px; font-weight:bold; font-size:14px;">${resultStr === "" ? scoreA : ""}</td>
+                    <td style="padding:1px 2px; font-weight:bold;">${row.time}</td>
+                    <td style="padding:1px 2px;"></td><td style="padding:1px 2px;"></td><td style="padding:1px 2px;"></td>
                 `;
             } else {
                 tr.innerHTML = `
-                    <td style="padding:4px;"></td><td style="padding:4px;"></td><td style="padding:4px;"></td>
-                    <td style="padding:4px; font-weight:bold;">${row.time}</td>
-                    <td style="padding:4px; font-weight:bold; font-size:16px;">${resultStr === "" ? scoreB : ""}</td>
-                    <td style="padding:4px;">${resultStr}</td>
-                    <td style="padding:4px;">${row.number}</td>
+                    <td style="padding:1px 2px;"></td><td style="padding:1px 2px;"></td><td style="padding:1px 2px;"></td>
+                    <td style="padding:1px 2px; font-weight:bold;">${row.time}</td>
+                    <td style="padding:1px 2px; font-weight:bold; font-size:14px;">${resultStr === "" ? scoreB : ""}</td>
+                    <td style="padding:1px 2px;">${resultStr}</td>
+                    <td style="padding:1px 2px;">${row.number}</td>
                 `;
             }
 
@@ -370,15 +371,15 @@ function generateScoreSheet() {
                 let playerName = (playerList && playerList[num]) ? playerList[num] : "";
 
                 tr.innerHTML = `
-                    <td style="padding:4px; font-weight:bold;">${num}</td>
-                    <td style="padding:4px; font-size:12px; text-align:left;">${playerName}</td>
-                    <td style="padding:4px;">${p.goals > 0 ? p.goals : ''}</td>
-                    <td style="padding:4px;">${p.w > 0 ? p.w : ''}</td>
-                    <td style="padding:4px;">${p.s > 0 ? p.s : ''}</td>
-                    <td style="padding:4px;">${p.d > 0 ? p.d : ''}</td>
+                    <td style="padding:3px; font-weight:bold;">${num}</td>
+                    <td style="padding:3px; font-size:11px; text-align:left; white-space:nowrap; overflow:hidden;">${playerName}</td>
+                    <td style="padding:3px;">${p.goals > 0 ? p.goals : ''}</td>
+                    <td style="padding:3px;">${p.w > 0 ? p.w : ''}</td>
+                    <td style="padding:3px;">${p.s > 0 ? p.s : ''}</td>
+                    <td style="padding:3px;">${p.d > 0 ? p.d : ''}</td>
                 `;
             } else {
-                tr.innerHTML = `<td style="padding:4px; height:26px;"></td><td></td><td></td><td></td><td></td><td></td>`;
+                tr.innerHTML = `<td style="padding:3px; height:22px;"></td><td></td><td></td><td></td><td></td><td></td>`;
             }
             tbody.appendChild(tr);
         }
@@ -386,11 +387,11 @@ function generateScoreSheet() {
         const totalTr = document.createElement('tr');
         totalTr.style.backgroundColor = "#ffccff";
         totalTr.innerHTML = `
-            <td colspan="2" style="padding:4px; font-weight:bold; text-align:center;">合計</td>
-            <td style="padding:4px; font-weight:bold;">${totalGoals > 0 ? totalGoals : ''}</td>
-            <td style="padding:4px; font-weight:bold;">${totalW > 0 ? totalW : ''}</td>
-            <td style="padding:4px; font-weight:bold;">${totalS > 0 ? totalS : ''}</td>
-            <td style="padding:4px; font-weight:bold;">${totalD > 0 ? totalD : ''}</td>
+            <td colspan="2" style="padding:3px; font-weight:bold; text-align:center;">合計</td>
+            <td style="padding:3px; font-weight:bold;">${totalGoals > 0 ? totalGoals : ''}</td>
+            <td style="padding:3px; font-weight:bold;">${totalW > 0 ? totalW : ''}</td>
+            <td style="padding:3px; font-weight:bold;">${totalS > 0 ? totalS : ''}</td>
+            <td style="padding:3px; font-weight:bold;">${totalD > 0 ? totalD : ''}</td>
         `;
         tbody.appendChild(totalTr);
     }
