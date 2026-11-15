@@ -3,10 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>S.T.A.T 入力用 Ver.12</title>
+    <title>SATS Ver.14</title>
+    
+    <!-- iPhone用のアイコン設定（icon.pngを用意した場合） -->
+    <link rel="apple-touch-icon" href="icon.png">
+    
     <!-- PDF化用ライブラリ -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=13">
+    <link rel="stylesheet" href="style.css?v=14">
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
@@ -104,94 +108,104 @@
 
         <div style="overflow-x: auto; background: #525659; padding: 10px; border-radius: 5px;">
             <!-- このA4サイズの白い領域がそのままPDFになります -->
-            <div id="score-sheet-container" style="width: 210mm; min-height: 297mm; background: white; padding: 15mm; box-sizing: border-box; font-family: sans-serif; font-size: 14px; margin: 0 auto; color: black;">
+            <div id="score-sheet-container" style="width: 210mm; background: white; margin: 0 auto; color: black; font-family: sans-serif;">
                 
-                <!-- 1ページ目：ランニングスコア -->
-                <h2 style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 5px;">公式ランニングスコア</h2>
-                <div style="display: flex; justify-content: space-between;">
-                    <!-- 左半分：前半 -->
-                    <div style="width: 48%;">
-                        <h3 style="text-align: center; margin: 5px 0;">【 前 半 】</h3>
-                        <table style="width: 100%; border-collapse: collapse; text-align: center;" border="1" bordercolor="#333">
-                            <thead style="background: #f0f0f0;">
-                                <tr>
-                                    <th colspan="3" style="padding: 5px;">自チーム</th>
-                                    <th rowspan="2" style="width: 50px;">時間</th>
-                                    <th colspan="3" style="padding: 5px;">相手チーム</th>
-                                </tr>
-                                <tr>
-                                    <th style="width:15%;">番</th><th style="width:15%;">結</th><th style="width:20%;">点</th>
-                                    <th style="width:20%;">点</th><th style="width:15%;">結</th><th style="width:15%;">番</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody-first-half">
-                                <!-- JSで自動挿入されます -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- 右半分：後半 -->
-                    <div style="width: 48%;">
-                        <h3 style="text-align: center; margin: 5px 0;">【 後 半 】</h3>
-                        <table style="width: 100%; border-collapse: collapse; text-align: center;" border="1" bordercolor="#333">
-                            <thead style="background: #f0f0f0;">
-                                <tr>
-                                    <th colspan="3" style="padding: 5px;">自チーム</th>
-                                    <th rowspan="2" style="width: 50px;">時間</th>
-                                    <th colspan="3" style="padding: 5px;">相手チーム</th>
-                                </tr>
-                                <tr>
-                                    <th style="width:15%;">番</th><th style="width:15%;">結</th><th style="width:20%;">点</th>
-                                    <th style="width:20%;">点</th><th style="width:15%;">結</th><th style="width:15%;">番</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody-second-half">
-                                <!-- JSで自動挿入されます -->
-                            </tbody>
-                        </table>
+                <!-- 【1ページ目】ランニングスコア（枠をA4サイズに固定） -->
+                <div style="width: 210mm; height: 296mm; padding: 10mm 15mm; box-sizing: border-box; overflow: hidden;">
+                    <h2 style="text-align: center; margin: 0 0 10px 0; border-bottom: 2px solid #333; padding-bottom: 5px; font-size: 18px;">公式ランニングスコア</h2>
+                    
+                    <div style="display: flex; justify-content: space-between;">
+                        <!-- 左半分：前半 -->
+                        <div style="width: 48%;">
+                            <h3 style="text-align: center; margin: 5px 0; font-size: 14px;">【 前 半 】</h3>
+                            <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 12px;" border="1" bordercolor="#333">
+                                <thead style="background: #f0f0f0;">
+                                    <tr>
+                                        <th colspan="3" style="padding: 2px;">自チーム</th>
+                                        <th rowspan="2" style="width: 45px; padding: 2px;">時間</th>
+                                        <th colspan="3" style="padding: 2px;">相手チーム</th>
+                                    </tr>
+                                    <tr>
+                                        <th style="width:15%; padding: 2px;">番</th><th style="width:15%; padding: 2px;">結</th><th style="width:20%; padding: 2px;">点</th>
+                                        <th style="width:20%; padding: 2px;">点</th><th style="width:15%; padding: 2px;">結</th><th style="width:15%; padding: 2px;">番</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-first-half">
+                                    <!-- JSで自動挿入 -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- 右半分：後半 -->
+                        <div style="width: 48%;">
+                            <h3 style="text-align: center; margin: 5px 0; font-size: 14px;">【 後 半 】</h3>
+                            <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 12px;" border="1" bordercolor="#333">
+                                <thead style="background: #f0f0f0;">
+                                    <tr>
+                                        <th colspan="3" style="padding: 2px;">自チーム</th>
+                                        <th rowspan="2" style="width: 45px; padding: 2px;">時間</th>
+                                        <th colspan="3" style="padding: 2px;">相手チーム</th>
+                                    </tr>
+                                    <tr>
+                                        <th style="width:15%; padding: 2px;">番</th><th style="width:15%; padding: 2px;">結</th><th style="width:20%; padding: 2px;">点</th>
+                                        <th style="width:20%; padding: 2px;">点</th><th style="width:15%; padding: 2px;">結</th><th style="width:15%; padding: 2px;">番</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-second-half">
+                                    <!-- JSで自動挿入 -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 2ページ目：個人スコア（スタッツ） -->
-                <div style="page-break-before: always; padding-top: 20px;"></div>
-                <h2 style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 5px;">個人スコア（スタッツ）</h2>
-                <div style="display: flex; justify-content: space-between;">
-                    <!-- 自チーム個人成績 -->
-                    <div style="width: 48%;">
-                        <h3 style="text-align: center; margin: 5px 0;">【 自チーム 】</h3>
-                        <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 13px;" border="1" bordercolor="#333">
-                            <thead style="background: #f0f0f0;">
-                                <tr>
-                                    <th style="width:12%;">番</th>
-                                    <th style="width:40%;">氏名</th>
-                                    <th style="width:12%;">得点</th>
-                                    <th style="width:12%;">W</th>
-                                    <th style="width:12%;">S</th>
-                                    <th style="width:12%;">D</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody-individual-own">
-                                <!-- JSで自動挿入 -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- 相手チーム個人成績 -->
-                    <div style="width: 48%;">
-                        <h3 style="text-align: center; margin: 5px 0;">【 相手チーム 】</h3>
-                        <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 13px;" border="1" bordercolor="#333">
-                            <thead style="background: #f0f0f0;">
-                                <tr>
-                                    <th style="width:12%;">番</th>
-                                    <th style="width:40%;">氏名</th>
-                                    <th style="width:12%;">得点</th>
-                                    <th style="width:12%;">W</th>
-                                    <th style="width:12%;">S</th>
-                                    <th style="width:12%;">D</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody-individual-opp">
-                                <!-- JSで自動挿入 -->
-                            </tbody>
-                        </table>
+                <!-- ★ PDFライブラリ専用の強制改ページ指示 -->
+                <div class="html2pdf__page-break"></div>
+
+                <!-- 【2ページ目】個人スコア（枠をA4サイズに固定） -->
+                <div style="width: 210mm; height: 296mm; padding: 10mm 15mm; box-sizing: border-box; overflow: hidden;">
+                    <h2 style="text-align: center; margin: 0 0 10px 0; border-bottom: 2px solid #333; padding-bottom: 5px; font-size: 18px;">個人スコア（スタッツ）</h2>
+                    
+                    <div style="display: flex; justify-content: space-between;">
+                        <!-- 自チーム -->
+                        <div style="width: 48%;">
+                            <h3 style="text-align: center; margin: 5px 0; font-size: 14px;">【 自チーム 】</h3>
+                            <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 12px;" border="1" bordercolor="#333">
+                                <thead style="background: #f0f0f0;">
+                                    <tr>
+                                        <th style="width:12%; padding: 3px;">番</th>
+                                        <th style="width:40%; padding: 3px;">氏名</th>
+                                        <th style="width:12%; padding: 3px;">得点</th>
+                                        <th style="width:12%; padding: 3px;">W</th>
+                                        <th style="width:12%; padding: 3px;">S</th>
+                                        <th style="width:12%; padding: 3px;">D</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-individual-own">
+                                    <!-- JSで自動挿入 -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- 相手チーム -->
+                        <div style="width: 48%;">
+                            <h3 style="text-align: center; margin: 5px 0; font-size: 14px;">【 相手チーム 】</h3>
+                            <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 12px;" border="1" bordercolor="#333">
+                                <thead style="background: #f0f0f0;">
+                                    <tr>
+                                        <th style="width:12%; padding: 3px;">番</th>
+                                        <th style="width:40%; padding: 3px;">氏名</th>
+                                        <th style="width:12%; padding: 3px;">得点</th>
+                                        <th style="width:12%; padding: 3px;">W</th>
+                                        <th style="width:12%; padding: 3px;">S</th>
+                                        <th style="width:12%; padding: 3px;">D</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-individual-opp">
+                                    <!-- JSで自動挿入 -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 
@@ -242,6 +256,6 @@
     </div>
 
     <!-- 最新のJavaScriptを読み込む -->
-    <script src="app.js?v=13"></script>
+    <script src="app.js?v=14"></script>
 </body>
 </html>
