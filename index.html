@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SATS Ver.14</title>
-    
-    <!-- iPhone用のアイコン設定（icon.pngを用意した場合） -->
+    <title>Zero-Step Ver.15</title>
+
+    <!-- PWA・ホーム画面アイコン設定 -->
     <link rel="apple-touch-icon" href="icon.png">
-    
+    <link rel="manifest" href="manifest.json">
+
     <!-- PDF化用ライブラリ -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=14">
-    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css?v=15">
 </head>
 <body>
     <!-- 試合タイマー -->
@@ -37,8 +37,8 @@
     </div>
 
     <!-- 現在のGK設定 -->
-    <div style="text-align: center; margin: 10px 0; font-weight: bold; background: #ecf0f1; padding: 10px; border-radius: 5px;">
-        出場中の自チームGK: <input type="tel" id="active-gk-num" placeholder="番号" style="width: 60px; text-align: center; font-size: 18px; padding: 5px;">
+    <div class="gk-section">
+        出場中の自チームGK: <input type="tel" id="active-gk-num" placeholder="番号">
     </div>
 
     <!-- 背番号入力 -->
@@ -51,10 +51,12 @@
         </div>
     </div>
 
-    <!-- コート図 -->
+    <!-- 横向きHTML/CSSコート図 -->
     <div id="court-area">
-        <img src="court.png" alt="コート" id="court-img">
-        <div id="tap-marker" style="display:none;">★</div>
+        <div class="c-9m left"></div><div class="c-6m left"></div><div class="c-7m left"></div><div class="c-4m left"></div><div class="c-goal left"></div>
+        <div class="c-line-center"></div>
+        <div class="c-9m right"></div><div class="c-6m right"></div><div class="c-7m right"></div><div class="c-4m right"></div><div class="c-goal right"></div>
+        <div id="tap-marker">★</div>
     </div>
 
     <!-- プレー記録ボタン -->
@@ -70,7 +72,6 @@
             <button class="action-btn turnover" data-action="ターンオーバー">ﾀｰﾝｵｰﾊﾞｰ</button>
             <button class="action-btn steal" data-action="パスカット">ﾊﾟｽｶｯﾄ</button>
         </div>
-        <!-- 罰則系の独立グループ -->
         <div class="action-group">
             <button class="action-btn warning" data-action="警告(W)">警告(W)</button>
             <button class="action-btn penalty" data-action="2分退場">2分退場(S)</button>
@@ -86,141 +87,116 @@
         </ul>
     </div>
 
-    <!-- CSV出力 -->
-    <button id="btn-export" style="margin-bottom: 10px;">📥 公式記録用 CSVデータを出力</button>
-
-    <!-- 選手名簿設定 -->
-    <button id="btn-roster-settings" class="action-btn" style="background-color: #34495e; color: white; width: 100%; margin-bottom: 10px;">⚙️ 自チームの選手名簿を登録・編集</button>
-
-    <!-- PDF出力 -->
-    <button id="btn-preview-pdf" class="action-btn" style="background-color: #8e44ad; color: white; width: 100%; margin-bottom: 20px;">📄 ランニングスコア＆個人成績をPDF出力</button>
-    <div style="height: 50px;"></div> <!-- 一番下の余白 -->
+    <!-- 各種出力・設定ボタン -->
+    <button id="btn-export">📥 公式記録用 CSVデータを出力</button>
+    <button id="btn-roster-settings" class="action-btn utility-btn roster-btn">⚙️ 自チームの選手名簿を登録・編集</button>
+    <button id="btn-preview-pdf" class="action-btn utility-btn pdf-btn">📄 ランニングスコア＆個人成績をPDF出力</button>
+    <div style="height: 50px;"></div>
 
     <!-- ========================================== -->
-    <!-- PDF化されるモーダル（普段は非表示） -->
+    <!-- PDF出力用モーダル（A4フルサイズ固定枠） -->
     <!-- ========================================== -->
-    <div id="pdf-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; overflow-y:auto; padding:10px; box-sizing:border-box;">
-        
-        <div style="display:flex; justify-content:space-between; margin-bottom:10px; position:sticky; top:0; z-index:10000;">
-            <button id="btn-close-pdf" style="padding:10px 20px; font-size:16px; border-radius:5px; border:none; background:#ecf0f1;">戻る</button>
-            <button id="btn-download-pdf" style="padding:10px 20px; font-size:16px; border-radius:5px; border:none; background:#2980b9; color:white; font-weight:bold;">↓ PDFを保存・共有</button>
+    <div id="pdf-modal">
+        <div class="pdf-modal-header">
+            <button id="btn-close-pdf">戻る</button>
+            <button id="btn-download-pdf">↓ PDFを保存・共有</button>
         </div>
+        <div id="pdf-scroll-wrapper">
+            <div id="score-sheet-container">
 
-        <div style="overflow-x: auto; background: #525659; padding: 10px; border-radius: 5px;">
-            <!-- このA4サイズの白い領域がそのままPDFになります -->
-            <div id="score-sheet-container" style="width: 210mm; background: white; margin: 0 auto; color: black; font-family: sans-serif;">
-                
-                <!-- 【1ページ目】ランニングスコア（枠をA4サイズに固定） -->
-                <div style="width: 210mm; height: 296mm; padding: 10mm 15mm; box-sizing: border-box; overflow: hidden;">
-                    <h2 style="text-align: center; margin: 0 0 10px 0; border-bottom: 2px solid #333; padding-bottom: 5px; font-size: 18px;">公式ランニングスコア</h2>
-                    
-                    <div style="display: flex; justify-content: space-between;">
-                        <!-- 左半分：前半 -->
-                        <div style="width: 48%;">
-                            <h3 style="text-align: center; margin: 5px 0; font-size: 14px;">【 前 半 】</h3>
-                            <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 12px;" border="1" bordercolor="#333">
-                                <thead style="background: #f0f0f0;">
-                                    <tr>
-                                        <th colspan="3" style="padding: 2px;">自チーム</th>
-                                        <th rowspan="2" style="width: 45px; padding: 2px;">時間</th>
-                                        <th colspan="3" style="padding: 2px;">相手チーム</th>
+                <!-- 1ページ目：公式ランニングスコア -->
+                <div class="pdf-page">
+                    <h2 class="pdf-title">公式ランニングスコア</h2>
+                    <div class="pdf-columns">
+                        <div class="pdf-col">
+                            <div class="pdf-sub-title">【 前 半 】</div>
+                            <table class="pdf-table pdf-running-table">
+                                <thead>
+                                    <tr style="height: 22px;">
+                                        <th colspan="3">自チーム</th>
+                                        <th rowspan="2" style="width: 72px;">時間</th>
+                                        <th colspan="3">相手チーム</th>
                                     </tr>
-                                    <tr>
-                                        <th style="width:15%; padding: 2px;">番</th><th style="width:15%; padding: 2px;">結</th><th style="width:20%; padding: 2px;">点</th>
-                                        <th style="width:20%; padding: 2px;">点</th><th style="width:15%; padding: 2px;">結</th><th style="width:15%; padding: 2px;">番</th>
+                                    <tr style="height: 20px;">
+                                        <th style="width: 48px;">番</th><th style="width: 44px;">結</th><th style="width: 60px;">点</th>
+                                        <th style="width: 60px;">点</th><th style="width: 44px;">結</th><th style="width: 49px;">番</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tbody-first-half">
-                                    <!-- JSで自動挿入 -->
-                                </tbody>
+                                <tbody id="tbody-first-half"></tbody>
                             </table>
                         </div>
-                        
-                        <!-- 右半分：後半 -->
-                        <div style="width: 48%;">
-                            <h3 style="text-align: center; margin: 5px 0; font-size: 14px;">【 後 半 】</h3>
-                            <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 12px;" border="1" bordercolor="#333">
-                                <thead style="background: #f0f0f0;">
-                                    <tr>
-                                        <th colspan="3" style="padding: 2px;">自チーム</th>
-                                        <th rowspan="2" style="width: 45px; padding: 2px;">時間</th>
-                                        <th colspan="3" style="padding: 2px;">相手チーム</th>
+                        <div class="pdf-col">
+                            <div class="pdf-sub-title">【 後 半 】</div>
+                            <table class="pdf-table pdf-running-table">
+                                <thead>
+                                    <tr style="height: 22px;">
+                                        <th colspan="3">自チーム</th>
+                                        <th rowspan="2" style="width: 72px;">時間</th>
+                                        <th colspan="3">相手チーム</th>
                                     </tr>
-                                    <tr>
-                                        <th style="width:15%; padding: 2px;">番</th><th style="width:15%; padding: 2px;">結</th><th style="width:20%; padding: 2px;">点</th>
-                                        <th style="width:20%; padding: 2px;">点</th><th style="width:15%; padding: 2px;">結</th><th style="width:15%; padding: 2px;">番</th>
+                                    <tr style="height: 20px;">
+                                        <th style="width: 48px;">番</th><th style="width: 44px;">結</th><th style="width: 60px;">点</th>
+                                        <th style="width: 60px;">点</th><th style="width: 44px;">結</th><th style="width: 49px;">番</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tbody-second-half">
-                                    <!-- JSで自動挿入 -->
-                                </tbody>
+                                <tbody id="tbody-second-half"></tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
-                <!-- ★ PDFライブラリ専用の強制改ページ指示 -->
+                <!-- 強制改ページ -->
                 <div class="html2pdf__page-break"></div>
 
-                <!-- 【2ページ目】個人スコア（枠をA4サイズに固定） -->
-                <div style="width: 210mm; height: 296mm; padding: 10mm 15mm; box-sizing: border-box; overflow: hidden;">
-                    <h2 style="text-align: center; margin: 0 0 10px 0; border-bottom: 2px solid #333; padding-bottom: 5px; font-size: 18px;">個人スコア（スタッツ）</h2>
-                    
-                    <div style="display: flex; justify-content: space-between;">
-                        <!-- 自チーム -->
-                        <div style="width: 48%;">
-                            <h3 style="text-align: center; margin: 5px 0; font-size: 14px;">【 自チーム 】</h3>
-                            <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 12px;" border="1" bordercolor="#333">
-                                <thead style="background: #f0f0f0;">
-                                    <tr>
-                                        <th style="width:12%; padding: 3px;">番</th>
-                                        <th style="width:40%; padding: 3px;">氏名</th>
-                                        <th style="width:12%; padding: 3px;">得点</th>
-                                        <th style="width:12%; padding: 3px;">W</th>
-                                        <th style="width:12%; padding: 3px;">S</th>
-                                        <th style="width:12%; padding: 3px;">D</th>
+                <!-- 2ページ目：個人スコア（スタッツ） -->
+                <div class="pdf-page">
+                    <h2 class="pdf-title">個人スコア（スタッツ）</h2>
+                    <div class="pdf-columns">
+                        <div class="pdf-col">
+                            <div class="pdf-sub-title">【 自チーム 】</div>
+                            <table class="pdf-table pdf-individual-table">
+                                <thead>
+                                    <tr style="height: 32px;">
+                                        <th style="width: 44px;">番</th>
+                                        <th style="width: 165px;">氏名</th>
+                                        <th style="width: 54px;">得点</th>
+                                        <th style="width: 38px;">W</th>
+                                        <th style="width: 38px;">S</th>
+                                        <th style="width: 38px;">D</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tbody-individual-own">
-                                    <!-- JSで自動挿入 -->
-                                </tbody>
+                                <tbody id="tbody-individual-own"></tbody>
                             </table>
                         </div>
-                        
-                        <!-- 相手チーム -->
-                        <div style="width: 48%;">
-                            <h3 style="text-align: center; margin: 5px 0; font-size: 14px;">【 相手チーム 】</h3>
-                            <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 12px;" border="1" bordercolor="#333">
-                                <thead style="background: #f0f0f0;">
-                                    <tr>
-                                        <th style="width:12%; padding: 3px;">番</th>
-                                        <th style="width:40%; padding: 3px;">氏名</th>
-                                        <th style="width:12%; padding: 3px;">得点</th>
-                                        <th style="width:12%; padding: 3px;">W</th>
-                                        <th style="width:12%; padding: 3px;">S</th>
-                                        <th style="width:12%; padding: 3px;">D</th>
+                        <div class="pdf-col">
+                            <div class="pdf-sub-title">【 相手チーム 】</div>
+                            <table class="pdf-table pdf-individual-table">
+                                <thead>
+                                    <tr style="height: 32px;">
+                                        <th style="width: 44px;">番</th>
+                                        <th style="width: 165px;">氏名</th>
+                                        <th style="width: 54px;">得点</th>
+                                        <th style="width: 38px;">W</th>
+                                        <th style="width: 38px;">S</th>
+                                        <th style="width: 38px;">D</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tbody-individual-opp">
-                                    <!-- JSで自動挿入 -->
-                                </tbody>
+                                <tbody id="tbody-individual-opp"></tbody>
                             </table>
                         </div>
                     </div>
                 </div>
-                
+
             </div>
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- 名簿設定用モーダル -->
-    <!-- ========================================== -->
+    <!-- 名簿設定モーダル -->
     <div id="roster-modal" class="modal" style="z-index: 10001;">
         <div class="modal-content" style="text-align: left;">
             <h3 style="margin-top: 0; text-align: center;">選手名簿の設定</h3>
-            <p style="font-size: 13px; color: #555;">背番号と名前をカンマ(,)で区切って入力してください。<br>（例）<br>1,長谷部(GK)<br>2,高知 太郎</p>
-            <textarea id="roster-input" style="width: 100%; height: 200px; font-size: 16px; padding: 10px; box-sizing: border-box; margin-bottom: 10px;"></textarea>
+            <p style="font-size: 13px; color: #555;">背番号と名前をカンマ(,)で区切って1行ずつ入力してください。<br>登録した全員が個人スコアに最初から表示されます。</p>
+            <textarea id="roster-input" style="width: 100%; height: 220px; font-size: 16px; padding: 10px; box-sizing: border-box; margin-bottom: 10px;"></textarea>
             <div style="display: flex; justify-content: space-between;">
                 <button id="btn-close-roster" style="padding: 10px 20px; background: #95a5a6; border: none; border-radius: 5px; color: white;">キャンセル</button>
                 <button id="btn-save-roster" style="padding: 10px 20px; background: #27ae60; border: none; border-radius: 5px; color: white; font-weight: bold;">保存する</button>
@@ -228,9 +204,7 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
     <!-- シュート詳細モーダル -->
-    <!-- ========================================== -->
     <div id="shot-modal" class="modal">
         <div class="modal-content">
             <h3 id="modal-title">シュート詳細を記録</h3>
@@ -256,6 +230,6 @@
     </div>
 
     <!-- 最新のJavaScriptを読み込む -->
-    <script src="app.js?v=14"></script>
+    <script src="app.js?v=15"></script>
 </body>
 </html>
