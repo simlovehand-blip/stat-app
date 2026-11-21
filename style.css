@@ -1,71 +1,507 @@
-body { font-family: sans-serif; text-align: center; margin: 0; padding: 10px; background: #f0f0f0; user-select: none; }
+/* ========================================== */
+/* ベースのデザイン設定 */
+/* ========================================== */
+body {
+    font-family: sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 10px;
+    color: #333;
+    user-select: none;
+    -webkit-user-select: none;
+}
 
-/* タイマー機能 */
-.timer-section { background: #2c3e50; color: white; padding: 10px; border-radius: 8px; margin-bottom: 10px; }
-#timer-display { font-size: 32px; font-weight: bold; font-family: monospace; letter-spacing: 2px; margin-bottom: 5px; }
-.timer-controls { display: flex; justify-content: center; gap: 10px; }
-.timer-btn { padding: 8px 15px; font-size: 14px; font-weight: bold; border: none; border-radius: 5px; color: white; touch-action: manipulation; }
-.timer-btn.start { background: #27ae60; }
-.timer-btn.stop { background: #e74c3c; }
-.timer-btn.reset { background: #7f8c8d; }
+.timer-section {
+    text-align: center;
+    margin-bottom: 10px;
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
-/* トグルボタン（チーム・前後半） */
-.header { display: flex; justify-content: space-between; margin-bottom: 10px; gap: 10px; }
-.toggle-group { display: flex; flex: 1; background: #ccc; border-radius: 6px; overflow: hidden; }
-.toggle-btn { flex: 1; padding: 10px 0; font-size: 14px; border: none; background: #ccc; color: #555; font-weight: bold; }
-.team-btn.active { background: #34495e; color: white; }
-.phase-btn.active { background: #4CAF50; color: white; }
+#timer-display {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-variant-numeric: tabular-nums;
+}
 
-/* テンキー */
-.number-section { background: white; padding: 10px; border-radius: 8px; margin-bottom: 10px; }
-.selected-number { font-size: 18px; font-weight: bold; margin-bottom: 5px; color: #333; }
-.numpad { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
-.num-btn { width: 18%; padding: 12px 0; font-size: 18px; font-weight: bold; border: 1px solid #ddd; border-radius: 5px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); touch-action: manipulation; }
-.clear-btn { width: 38%; background: #ffcccc; color: #d00; }
+.timer-btn {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    margin: 0 2px;
+}
+.timer-btn.start { background-color: #27ae60; }
+.timer-btn.stop { background-color: #e74c3c; }
+.timer-btn.reset { background-color: #95a5a6; }
 
-/* コート */
-#court-area { position: relative; display: inline-block; margin-bottom: 10px; border: 2px solid #333; background: white; width: 100%; max-width: 400px;}
-#court-img { width: 100%; display: block; }
-#tap-marker { position: absolute; color: yellow; font-size: 24px; transform: translate(-50%, -50%); pointer-events: none; text-shadow: 0px 0px 4px black; }
+.header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
 
-/* アクションボタン */
-.actions { margin-bottom: 15px; }
-.action-group { display: flex; justify-content: center; gap: 5px; margin-bottom: 5px; }
-.action-btn { flex: 1; padding: 12px 2px; font-size: 14px; font-weight: bold; border: none; border-radius: 5px; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); touch-action: manipulation; }
-.goal { background: #e74c3c; }
-.save { background: #3498db; }
-.miss { background: #95a5a6; }
-.seven { background: #f1c40f; color: #333; }
-.turnover { background: #8e44ad; }
-.steal { background: #2ecc71; }
-/* 罰則カラー */
-.warning { background: #f39c12; color: white; }
-.penalty { background: #d35400; color: white; }
-.disqual { background: #c0392b; color: white; }
+.toggle-group {
+    display: flex;
+    width: 48%;
+}
 
-/* 履歴と出力ボタン */
-.history-section { background: white; padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: left; }
-.history-section h3 { margin: 0 0 10px 0; font-size: 16px; display: flex; justify-content: space-between; align-items: center; }
-#btn-undo { padding: 5px 10px; background: #ffeb3b; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
-#history-list { margin: 0; padding-left: 20px; font-size: 14px; color: #333; line-height: 1.5; }
-#btn-export { width: 100%; padding: 15px; font-size: 18px; font-weight: bold; background: #2c3e50; color: white; border: none; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+.toggle-btn {
+    flex: 1;
+    padding: 10px 0;
+    border: 1px solid #ccc;
+    background: #fff;
+    font-size: 14px;
+    font-weight: bold;
+}
+.toggle-btn.active {
+    background: #3498db;
+    color: #fff;
+    border-color: #3498db;
+}
 
-/* 新規追加：アシストボタンの色 */
-.assist { background: #e67e22; }
+.gk-section {
+    text-align: center;
+    margin: 10px 0;
+    font-weight: bold;
+    background: #ecf0f1;
+    padding: 10px;
+    border-radius: 5px;
+}
 
-/* 新規追加：シュート詳細モーダル（ポップアップ） */
-.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); z-index: 1000; justify-content: center; align-items: center; }
-.modal-content { background: white; padding: 15px; border-radius: 10px; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-.modal-content h3 { margin-top: 0; margin-bottom: 15px; font-size: 18px; color: #333; }
+#active-gk-num {
+    width: 60px;
+    text-align: center;
+    font-size: 18px;
+    padding: 5px;
+}
 
-/* シュート種類選択 */
-.shot-type-group { display: flex; justify-content: space-between; margin-bottom: 15px; gap: 5px; }
-.shot-type-btn { flex: 1; padding: 10px 0; font-size: 14px; font-weight: bold; border: 1px solid #bdc3c7; background: #ecf0f1; border-radius: 5px; color: #555; touch-action: manipulation; }
-.shot-type-btn.active { background: #3498db; color: white; border-color: #2980b9; }
+.number-section {
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
-/* 3x3 ゴール枠 (GKチャート) */
-.goal-frame { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr 1fr; gap: 4px; background: #c0392b; padding: 8px; border: 6px solid #bdc3c7; border-bottom: none; height: 200px; margin-bottom: 15px; }
-.goal-zone { background: rgba(255,255,255,0.9); display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 14px; color: #333; border: 1px dashed #95a5a6; touch-action: manipulation; cursor: pointer; }
-.goal-zone:active { background: #f1c40f; }
+.selected-number {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
 
-.cancel-btn { padding: 12px; background: #7f8c8d; color: white; border: none; border-radius: 5px; font-weight: bold; width: 100%; font-size: 16px; }
+.numpad {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+}
+
+.num-btn {
+    padding: 12px 0;
+    font-size: 18px;
+    font-weight: bold;
+    border: 1px solid #ddd;
+    background: #fafafa;
+    border-radius: 4px;
+}
+
+.num-btn.clear-btn {
+    grid-column: span 5;
+    background: #e74c3c;
+    color: white;
+    border: none;
+}
+
+/* ========================================== */
+/* HTML/CSSで描画するコート図（横向き版） */
+/* ========================================== */
+#court-area {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    aspect-ratio: 2 / 1;
+    background-color: #2c3e50;
+    border: 2px solid #fff;
+    margin: 0 auto 10px;
+    box-sizing: border-box;
+    overflow: hidden;
+    touch-action: manipulation;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.c-line-center {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 2px;
+    height: 100%;
+    background-color: #fff;
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+.c-6m {
+    position: absolute;
+    top: 12.5%;
+    width: 15%;
+    height: 75%;
+    border: 2px solid #fff;
+    box-sizing: border-box;
+    background-color: #34495e;
+}
+.c-6m.left { left: 0; border-left: none; border-top-right-radius: 100% 50%; border-bottom-right-radius: 100% 50%; }
+.c-6m.right { right: 0; border-right: none; border-top-left-radius: 100% 50%; border-bottom-left-radius: 100% 50%; }
+
+.c-9m {
+    position: absolute;
+    top: 0;
+    width: 22.5%;
+    height: 100%;
+    border: 2px dashed #fff;
+    box-sizing: border-box;
+}
+.c-9m.left { left: 0; border-left: none; border-top-right-radius: 100% 50%; border-bottom-right-radius: 100% 50%; }
+.c-9m.right { right: 0; border-right: none; border-top-left-radius: 100% 50%; border-bottom-left-radius: 100% 50%; }
+
+.c-7m { position: absolute; top: 45%; height: 10%; width: 2px; background-color: #fff; }
+.c-7m.left { left: 17.5%; }
+.c-7m.right { right: 17.5%; }
+
+.c-4m { position: absolute; top: 45%; height: 10%; width: 2px; background-color: #fff; }
+.c-4m.left { left: 10%; }
+.c-4m.right { right: 10%; }
+
+.c-goal {
+    position: absolute;
+    top: 42.5%;
+    width: 2.5%;
+    height: 15%;
+    background-color: #e74c3c;
+    border: 2px solid #fff;
+    box-sizing: border-box;
+    z-index: 2;
+}
+.c-goal.left { left: -2px; border-left: none; }
+.c-goal.right { right: -2px; border-right: none; }
+
+#tap-marker {
+    position: absolute;
+    color: #f1c40f;
+    font-size: 24px;
+    font-weight: bold;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    text-shadow: 1px 1px 0 #000;
+    z-index: 10;
+    display: none;
+}
+
+/* ========================================== */
+/* アクションボタン・履歴・モーダル */
+/* ========================================== */
+.actions { margin-bottom: 10px; }
+.action-group {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+    margin-bottom: 5px;
+}
+
+.action-btn {
+    padding: 12px 2px;
+    font-size: 13px;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    background: #7f8c8d;
+}
+.action-btn.goal { background: #e74c3c; }
+.action-btn.save { background: #3498db; }
+.action-btn.miss { background: #f39c12; }
+.action-btn.seven { background: #9b59b6; }
+.action-btn.warning { background: #f1c40f; color: #333; }
+.action-btn.penalty { background: #e67e22; }
+.action-btn.disqual { background: #c0392b; }
+
+.history-section {
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#history-list {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 0 0;
+    font-size: 14px;
+}
+#history-list li {
+    padding: 4px 0;
+    border-bottom: 1px dashed #eee;
+}
+
+#btn-undo {
+    float: right;
+    padding: 4px 8px;
+    background: #f39c12;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+#btn-export {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    background: #2ecc71;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.utility-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+.roster-btn { background-color: #34495e; }
+.pdf-btn { background-color: #8e44ad; margin-bottom: 20px; }
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 320px;
+    text-align: center;
+}
+
+.shot-type-group {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 15px;
+}
+
+.shot-type-btn {
+    flex: 1;
+    padding: 8px 0;
+    font-size: 12px;
+    border: 1px solid #3498db;
+    background: white;
+    color: #3498db;
+    border-radius: 4px;
+}
+.shot-type-btn.active {
+    background: #3498db;
+    color: white;
+}
+
+.goal-frame {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: #333;
+    padding: 4px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+}
+
+.goal-zone {
+    background: white;
+    padding: 15px 0;
+    font-size: 12px;
+    font-weight: bold;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.cancel-btn {
+    padding: 10px 20px;
+    background: #95a5a6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 100%;
+}
+
+/* ========================================== */
+/* PDFモーダル & 左ズレ・途切れ防止用補正 */
+/* ========================================== */
+#pdf-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    overflow-y: auto;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.pdf-modal-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 10000;
+}
+
+#btn-close-pdf {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    background: #ecf0f1;
+}
+
+#btn-download-pdf {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    background: #2980b9;
+    color: white;
+    font-weight: bold;
+}
+
+#pdf-scroll-wrapper {
+    overflow-x: auto;
+    background: #525659;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.html2pdf__overlay {
+    overflow: visible !important;
+}
+
+.html2pdf__container {
+    left: 0 !important;
+    right: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 793px !important;
+}
+
+/* ========================================== */
+/* PDF用シート（A4実寸 793px × 1120px に厳密固定） */
+/* ========================================== */
+#score-sheet-container {
+    width: 793px;
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+    color: #000000;
+    font-family: sans-serif;
+}
+
+.pdf-page {
+    width: 793px;
+    height: 1120px;
+    padding: 14px;
+    box-sizing: border-box;
+    background: #ffffff;
+    overflow: hidden;
+}
+
+.pdf-title {
+    text-align: center;
+    margin: 0 0 8px 0;
+    padding-bottom: 4px;
+    border-bottom: 2px solid #333;
+    font-size: 16px;
+    height: 30px;
+    line-height: 24px;
+    box-sizing: border-box;
+}
+
+.pdf-columns {
+    display: flex;
+    justify-content: space-between;
+    gap: 11px;
+    width: 765px;
+}
+
+.pdf-col {
+    width: 377px;
+}
+
+.pdf-sub-title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 13px;
+    height: 24px;
+    line-height: 24px;
+    margin-bottom: 4px;
+}
+
+.pdf-table {
+    width: 377px;
+    border-collapse: collapse;
+    table-layout: fixed;
+    text-align: center;
+}
+
+.pdf-table th,
+.pdf-table td {
+    border: 1px solid #333;
+    box-sizing: border-box;
+    padding: 0 2px;
+    vertical-align: middle;
+}
+
+.pdf-table thead {
+    background: #f0f0f0;
+}
+
+.pdf-table th {
+    white-space: nowrap;
+}
+
+.pdf-running-table {
+    font-size: 11px;
+    line-height: 1.1;
+}
+
+.pdf-individual-table {
+    font-size: 12px;
+    line-height: 1.2;
+}
+
+.pdf-name-cell {
+    text-align: left !important;
+    padding-left: 5px !important;
+    white-space: nowrap;
+    overflow: hidden;
+}
